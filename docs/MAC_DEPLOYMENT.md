@@ -80,6 +80,7 @@ python3 scripts/setup_environment.py --venv .venv
 
 | 问题 | 操作 |
 |---|---|
+| Git拉取长时间卡住/HTTP2报错 | 在新的目标目录使用 `git -c http.version=HTTP/1.1 clone https://github.com/Laura-LLU/LauraPhysics.git`，或GitHub Download ZIP；不覆盖自己的旧目录 |
 | Python 太旧 | 安装3.12并重建本项目独立环境 |
 | ModuleNotFoundError | 使用 `.venv/bin/python`，重新安装，不借用作者 vendor |
 | Chromium 未就绪 | `.venv/bin/python -m playwright install chromium` |

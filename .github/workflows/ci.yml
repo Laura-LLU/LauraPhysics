@@ -22,6 +22,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     env:
       PYTHONIOENCODING: utf-8
+      PYTHONUTF8: '1'
       LAURAPHYSICS_DISABLE_LEGACY_CONFIG: '1'
     steps:
       - uses: actions/checkout@v4
