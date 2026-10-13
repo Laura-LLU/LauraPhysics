@@ -1,5 +1,6 @@
 """Resource installation failures must not corrupt or escape the public tree."""
 import hashlib, json, stat, zipfile
+import io
 from pathlib import Path
 import pytest
 from scripts import bootstrap_assets as assets
@@ -67,3 +68,26 @@ def test_offline_ensure_assets_does_not_need_network(tmp_path,monkeypatch):
  monkeypatch.setattr(assets,'download',lambda *args:pytest.fail('Offline install used network'))
  result=assets.ensure_assets(root,archive=archive)
  assert result['ok'] and result['verified'] and not result['downloaded']
+
+def test_short_response_resumes_and_verifies_full_archive(tmp_path,monkeypatch):
+ data=b'public resource bytes';destination=tmp_path/'download.zip';requests=[]
+ manifest={'url':'https://github.com/Laura-LLU/LauraPhysics/releases/download/test/assets.zip',
+  'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
+ def open_response(request,timeout):
+  requests.append(request)
+  result=io.BytesIO(data[:7] if len(requests)==1 else data[7:])
+  result.status=200 if len(requests)==1 else 206
+  result.headers={} if len(requests)==1 else {'Content-Range':'bytes 7-'+str(len(data)-1)+'/'+str(len(data))}
+  return result
+ monkeypatch.setattr(assets,'urlopen',open_response);monkeypatch.setattr(assets.time,'sleep',lambda *args:None)
+ assets.download(manifest,destination)
+ assert destination.read_bytes()==data and requests[1].get_header('Range')=='bytes=7-'
+
+def test_incorrect_resume_offset_cannot_publish_corrupt_archive(tmp_path,monkeypatch):
+ destination=tmp_path/'download.zip';destination.with_suffix('.part').write_bytes(b'prefix')
+ manifest={'url':'https://github.com/Laura-LLU/LauraPhysics/releases/download/test/assets.zip','bytes':20,'sha256':'0'*64}
+ def open_response(*args,**kwargs):
+  result=io.BytesIO(b'wrong bytes');result.status=206;result.headers={'Content-Range':'bytes 0-10/20'};return result
+ monkeypatch.setattr(assets,'urlopen',open_response)
+ with pytest.raises(ValueError,match='range mismatch'):assets.download(manifest,destination)
+ assert not destination.exists() and destination.with_suffix('.part').read_bytes()==b'prefix'

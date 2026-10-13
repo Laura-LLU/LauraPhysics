@@ -90,13 +90,17 @@ def download(manifest, destination):
         try:
             with urlopen(Request(manifest['url'], headers=headers), timeout=45) as response:
                 append = offset > 0 and response.status == 206
+                if append and not response.headers.get('Content-Range', '').startswith('bytes '+str(offset)+'-'):
+                    raise ValueError('Download resume range mismatch')
                 written = offset if append else 0
                 with partial.open('ab' if append else 'wb') as stream:
                     while chunk := response.read(1024*1024):
                         written += len(chunk)
                         if written > manifest['bytes']: raise ValueError('Download exceeds declared size')
                         stream.write(chunk)
-            if partial.stat().st_size != manifest['bytes'] or sha256(partial) != manifest['sha256']:
+            if partial.stat().st_size != manifest['bytes']:
+                raise OSError('Incomplete resource response; retrying the remaining bytes')
+            if sha256(partial) != manifest['sha256']:
                 raise ValueError('Download checksum mismatch')
             partial.replace(destination)
             return
