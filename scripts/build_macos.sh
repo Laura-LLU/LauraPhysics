@@ -25,7 +25,7 @@ cp "$ROOT_DIR/ai_workflows.py" "$RESOURCES_DIR/ai_workflows.py"
 cp "$ROOT_DIR/question_pool.py" "$RESOURCES_DIR/question_pool.py"
 cp "$ROOT_DIR/environment_check.py" "$RESOURCES_DIR/environment_check.py"
 mkdir -p "$RESOURCES_DIR/scripts"
-cp "$ROOT_DIR/scripts/run_web.py" "$ROOT_DIR/scripts/setup_environment.py" "$ROOT_DIR/scripts/evaluate_marking.py" "$RESOURCES_DIR/scripts/"
+cp "$ROOT_DIR/scripts/run_web.py" "$ROOT_DIR/scripts/setup_environment.py" "$ROOT_DIR/scripts/bootstrap_assets.py" "$ROOT_DIR/scripts/evaluate_marking.py" "$RESOURCES_DIR/scripts/"
 if [[ -d "$ROOT_DIR/vendor" ]]; then
   mkdir -p "$RESOURCES_DIR/vendor"
   cp -R "$ROOT_DIR/vendor/." "$RESOURCES_DIR/vendor/"

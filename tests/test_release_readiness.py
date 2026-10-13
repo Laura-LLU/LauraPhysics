@@ -47,3 +47,15 @@ def test_static_entrypoints_do_not_embed_api_keys():
         text = path.read_text(encoding="utf-8", errors="ignore")
         assert not any(token in text for token in suspicious), f"可疑密钥片段出现在 {path.name}"
 
+
+def test_mac_builder_keeps_asset_installer_and_selected_license():
+    builder=(ROOT/'scripts/build_macos.sh').read_text()
+    assert 'scripts/bootstrap_assets.py' in builder
+    assert '"$ROOT_DIR/LICENSE"' in builder
+    assert 'LICENSE-PENDING' not in builder
+
+
+def test_public_question_prompts_have_no_local_file_images():
+    for name in ['questions.json','opbp-provenance.json','opbp-reference-answers.json']:
+        assert 'file://' not in (ROOT/'data'/name).read_text()
+

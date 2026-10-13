@@ -43,9 +43,11 @@ def main():
     result={'exitCode':process.returncode,'seconds':round(time.monotonic()-began,2),
             'python':sys.version.split()[0], 'realModelCalls':False, 'coverageScope':'in-process only; HTTP subprocess not instrumented'}
     revision=subprocess.run(['git','rev-parse','HEAD'],cwd=ROOT,capture_output=True,text=True,check=False)
+    dirty=subprocess.run(['git','status','--porcelain','--untracked-files=no'],cwd=ROOT,capture_output=True,text=True,check=False)
     version=re.search(r"^VERSION\s*=\s*['\"]([^'\"]+)", (ROOT/'server.py').read_text(), re.M)
     result.update(platform=platform.system(),architecture=platform.machine(),
                   gitCommit=revision.stdout.strip() if revision.returncode==0 else None,
+                  gitDirty=bool(dirty.stdout.strip()) if dirty.returncode==0 else None,
                   projectVersion=version[1] if version else None,
                   assetManifestSha256=hashlib.sha256((ROOT/'data/asset-manifest.json').read_bytes()).hexdigest())
     if (output/'junit.xml').exists():
