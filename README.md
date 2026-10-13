@@ -14,6 +14,7 @@
 ```bash
 git clone https://github.com/Laura-LLU/LauraPhysics.git
 cd LauraPhysics
+export SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}"
 python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/run_web.py --check
 .venv/bin/python scripts/run_web.py --open
@@ -21,7 +22,7 @@ python3 scripts/setup_environment.py --venv .venv
 
 打开 http://127.0.0.1:8895/ ，终端保持运行，退出用 `Control+C`。首次安装自动下载约 636 MB 的题图 Release 资源并校验 ZIP/逐文件 SHA-256。仓库不包含作者的 Python 环境、密钥、学生答卷和历史导出。
 
-**[详细 Mac 部署指南](docs/MAC_DEPLOYMENT.md)** · [测试说明](docs/TESTING.md) · [已知限制](docs/KNOWN_LIMITATIONS.md)
+**[详细 Mac 部署指南](docs/MAC_DEPLOYMENT.md)** · [测试说明](docs/TESTING.md) · [验收记录](docs/VALIDATION.md) · [已知限制](docs/KNOWN_LIMITATIONS.md)
 
 ## 一键自动化测试
 

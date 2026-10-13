@@ -15,6 +15,8 @@ mkdir -p "$HOME/Applications/LauraPhysics-Source"
 cd "$HOME/Applications/LauraPhysics-Source"
 git clone https://github.com/Laura-LLU/LauraPhysics.git
 cd LauraPhysics
+# 若没有另行设置证书，当前终端使用 Mac 自带的可信 CA；不关闭 HTTPS 验证。
+export SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}"
 python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/run_web.py --check
 ```
@@ -82,6 +84,7 @@ python3 scripts/setup_environment.py --venv .venv
 |---|---|
 | Git拉取长时间卡住/HTTP2报错 | 在新的目标目录使用 `git -c http.version=HTTP/1.1 clone https://github.com/Laura-LLU/LauraPhysics.git`，或GitHub Download ZIP；不覆盖自己的旧目录 |
 | Python 太旧 | 安装3.12并重建本项目独立环境 |
+| CERTIFICATE_VERIFY_FAILED | 官方Python安装包可能未安装CA证书；运行其 `Install Certificates.command`，或按上方步骤在当前终端设置 `SSL_CERT_FILE=/etc/ssl/cert.pem` 后重试。不要关闭TLS校验；换新终端需重新设置，模型请求也需要可信证书 |
 | ModuleNotFoundError | 使用 `.venv/bin/python`，重新安装，不借用作者 vendor |
 | Chromium 未就绪 | `.venv/bin/python -m playwright install chromium` |
 | 页面打不开 | 检查终端、端口和错误日志 |

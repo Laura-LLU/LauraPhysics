@@ -101,7 +101,7 @@ def download(manifest, destination):
             partial.replace(destination)
             return
         except (URLError, HTTPError, TimeoutError, OSError) as exc:
-            if attempt == 2: raise RuntimeError('资源下载失败，可从 GitHub Release 手动下载后使用 --archive。') from exc
+            if attempt == 2: raise RuntimeError('资源下载失败：'+str(exc)+'。可从 GitHub Release 手动下载后使用 --archive；Mac 证书错误见部署指南。') from exc
             time.sleep(1 << attempt)
 
 def ensure_assets(root=ROOT, archive=None, verify=False):
