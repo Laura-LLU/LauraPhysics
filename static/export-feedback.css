@@ -1,0 +1,14 @@
+.pdf-export-notice{position:fixed;z-index:80;top:16px;right:16px;width:min(490px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;border:1px solid #bce1ce;border-radius:16px;padding:19px;background:#edf9f3;color:#172231;box-shadow:0 12px 48px rgba(23,34,49,.22);font:14px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+.pdf-export-notice[hidden]{display:none}.pdf-export-notice.pending{background:#fff8e8;border-color:#e2c77e}.pdf-export-notice.failed{background:#fff0f0;border-color:#e1b8b8}
+.pdf-export-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.pdf-export-heading h2{margin:0;font-size:20px;line-height:1.3}.pdf-export-close{border:0;border-radius:7px;background:transparent;color:#526274;font-size:23px;line-height:1;padding:3px 7px;cursor:pointer}
+.pdf-export-summary{margin:9px 0;color:#42604f}.pdf-export-notice.failed .pdf-export-summary{color:#8f2f2f}
+.pdf-export-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.pdf-export-actions button,.pdf-export-actions a{font:inherit;border:1px solid #8dc7aa;border-radius:8px;background:#fff;color:#176044;padding:8px 11px;text-decoration:none;cursor:pointer}.pdf-export-actions .pdf-export-reveal{background:#176044;color:#fff;border-color:#176044;font-weight:700}.pdf-export-action-status{margin:8px 0 0;color:#42604f;font-size:12px}.pdf-export-action-status:empty{display:none}
+.pdf-export-notice button:focus-visible,.pdf-export-notice a:focus-visible{outline:3px solid rgba(41,112,189,.3);outline-offset:2px}
+@media(max-width:600px){.pdf-export-notice{top:10px;right:10px;width:calc(100vw - 20px);max-height:calc(100vh - 20px);padding:15px}.pdf-export-heading h2{font-size:18px}}
+.basket-feedback{flex:0 0 auto;min-height:0;max-height:45vh;overflow:auto}
+.pdf-export-notice.in-basket{position:static;width:auto;max-height:none;margin:9px 15px;padding:10px;border-radius:11px;box-shadow:none;font-size:13px}
+.pdf-export-notice.in-basket .pdf-export-heading h2{font-size:16px}
+.pdf-export-notice.in-basket .pdf-export-summary{margin:5px 0;font-size:12px}
+.pdf-export-notice.in-basket .pdf-export-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:7px}
+.pdf-export-notice.in-basket .pdf-export-actions button,.pdf-export-notice.in-basket .pdf-export-actions a{padding:5px 7px;font-size:12px;text-align:center}
+.pdf-export-notice.in-basket .pdf-export-reveal{background:#fff;color:#176044;font-weight:600}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OPBP · 题库版权</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f2e9;color:#192535;font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}header{background:#172334;color:#fff;border-bottom:4px solid #c64b3c;padding:30px 36px}h1{margin:0 0 10px;font:32px Georgia,"Songti SC",serif}header p{margin:6px 0;color:#cbd5e2}header a{color:#fff}main{padding:26px 36px}a{color:#215b82}input{width:100%;font:inherit;border:1px solid #ccc6ba;border-radius:8px;padding:12px 14px;background:#fff;margin:12px 0 16px}table{width:100%;border-collapse:collapse;background:white;font-size:13px}th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #e4dfd5;vertical-align:top}th{background:#eee9de;color:#526170}td:first-child{white-space:nowrap;font-weight:700}td:nth-child(4){white-space:nowrap}.count{color:#596979;margin:0}.licenses{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px}.licenses a{display:inline-block}#status{color:#596979}button{font:inherit;border:1px solid #bcb4a7;border-radius:6px;padding:6px 14px;background:#fff;cursor:pointer}input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #215b82;outline-offset:2px}
+</style>
+<header>
+<h1>OPBP · 题库版权</h1>
+<p>题目来源：<a href="https://github.com/open-resources/physics_bank" target="_blank" rel="noopener noreferrer">Open Problem Bank for Physics</a></p>
+<p>原题作者、许可及原文件链接见下表。题目版式、教师参考答案与评分点由本产品整理。</p>
+<div class="licenses">
+<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC-SA 4.0</a>
+<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>
+</div>
+</header>
+<main>
+<p id="totals" class="count">正在载入题库署名…</p>
+<input id="search" type="search" aria-label="搜索题号、题目、作者或许可" placeholder="搜索题号、题目、作者或许可，例如 P003" autocomplete="off">
+<p id="status" role="status"></p>
+<table aria-label="逐题版权与出处"><thead><tr><th scope="col">题号</th><th scope="col">题目</th><th scope="col">原题作者</th><th scope="col">许可</th><th scope="col">出处</th></tr></thead><tbody id="rows"></tbody></table>
+</main>
+<script>
+const licenseLinks={'CC BY-NC-SA 4.0':'https://creativecommons.org/licenses/by-nc-sa/4.0/','CC BY 4.0':'https://creativecommons.org/licenses/by/4.0/'};
+let questions=[];
+function appendTextCell(row,text){const cell=document.createElement('td');cell.textContent=text;row.append(cell);return cell}
+function appendLinkCell(row,text,address){const cell=appendTextCell(row,'');let url;try{url=new URL(address)}catch{}if(url&&url.protocol==='https:'){const a=document.createElement('a');a.textContent=text;a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';cell.append(a)}else{cell.textContent=text}}
+function render(){const query=document.getElementById('search').value.trim().toLowerCase();const shown=questions.filter(q=>[q.reviewId,q.id,q.title,q.author,q.license].join(' ').toLowerCase().includes(query));const rows=document.getElementById('rows');rows.replaceChildren();const fragment=document.createDocumentFragment();for(const q of shown){const row=document.createElement('tr');appendTextCell(row,q.reviewId);appendTextCell(row,q.title);appendTextCell(row,q.author);appendLinkCell(row,q.license,licenseLinks[q.license]);appendLinkCell(row,'原题',q.sourceUrl);fragment.append(row)}rows.append(fragment);document.getElementById('status').textContent=`显示 ${shown.length} / ${questions.length} 题`}
+document.getElementById('search').addEventListener('input',render);
+async function load(){try{const response=await fetch('/api/attribution',{cache:'no-store'});if(!response.ok)throw new Error();const data=await response.json();questions=data.questions.sort((a,b)=>a.reviewId.localeCompare(b.reviewId));const counts=new Map();for(const q of questions)counts.set(q.license,(counts.get(q.license)||0)+1);document.getElementById('totals').textContent=`本地题库 ${questions.length} 题 · `+[...counts].map(([label,n])=>`${label}：${n}题`).join(' · ');render()}catch{document.getElementById('totals').textContent='题库署名暂时无法载入';const retry=document.createElement('button');retry.textContent='重新载入';retry.onclick=load;document.getElementById('status').replaceChildren(retry)}}
+load();
+</script>
+</html>

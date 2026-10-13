@@ -1,0 +1,4 @@
+-r requirements-tested.txt
+pytest==8.4.2
+coverage==7.10.7
+playwright==1.62.0

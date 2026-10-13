@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<script src="/paper-labels.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPBP 物理题库 · 本地组卷工具</title>
+<style>
+:root{
+  --ink:#172231;--muted:#687385;--paper:#f5f2eb;--card:#fff;--line:#d8d4ca;
+  --blue:#1d5ea8;--blue-soft:#e8f1fb;--red:#c9473a;--red-soft:#fff0ed;--easy:#237a57;--medium:#b46b12;--hard:#ae3e3e;
+  --shadow:0 8px 28px rgba(25,40,60,.09)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.hero{padding:22px clamp(18px,4vw,48px) 0;background:#172231;color:#fff;border-bottom:4px solid var(--red)}
+.hero-line{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;max-width:1680px;margin:auto}
+.hero h1{margin:0 0 5px;font-family:Georgia,"Songti SC",serif;font-size:clamp(25px,3.2vw,39px);letter-spacing:-.4px}
+.subtitle{color:#c9d5e5}.server-pill{padding:7px 11px;border:1px solid #52657c;border-radius:999px;color:#dfeafa;white-space:nowrap;font-size:13px}
+.hero-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.hero-actions a{color:#e9f2ff;text-decoration:none;font-size:13px;white-space:nowrap}.hero-actions a:hover{text-decoration:underline}.brand-link{display:inline-flex;align-items:center;gap:7px;font-weight:700}.brand-mark{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#c9473a;color:#fff;font:700 12px/1 Georgia,serif}
+.contact-trigger{border:1px solid #62758b;border-radius:999px;background:transparent;color:#e9f2ff;padding:7px 12px;font-size:13px;font-weight:700}.contact-trigger:hover{background:#2a3b50}.contact-dialog{width:min(430px,calc(100vw - 28px));max-height:calc(100vh - 28px);border:0;border-radius:18px;padding:0;color:var(--ink);box-shadow:0 22px 70px rgba(0,0,0,.3)}.contact-dialog::backdrop{background:rgba(17,30,45,.55)}.contact-dialog-inner{padding:24px}.contact-head{display:flex;align-items:center;gap:10px}.contact-head .brand-mark{width:34px;height:34px;font-size:17px}.contact-head h2{margin:0;font-size:22px}.contact-hint{margin:10px 0 18px;color:var(--muted);font-size:13px}.contact-list{margin:0}.contact-row{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;align-items:center;border-top:1px solid var(--line);padding:11px 0}.contact-row dt{color:var(--muted);font-size:13px}.contact-row dd{margin:0;font-weight:650;overflow-wrap:anywhere}.contact-row a{color:var(--blue)}.contact-dialog form{display:flex;justify-content:flex-end;margin-top:18px}.contact-dialog form button{border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 18px}
+.workspace-tabs{display:flex;max-width:1680px;margin:20px auto 0;gap:4px}.workspace-tab{border:0;border-radius:9px 9px 0 0;padding:11px 18px;background:transparent;color:#c9d5e5;font-weight:700}.workspace-tab.active{background:var(--paper);color:var(--ink)}
+.view{display:none}.view.active{display:block}.workspace-panel{max-width:1180px;margin:28px auto 60px;padding:0 24px}.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px}.panel-head h2{font:700 28px/1.15 Georgia,"Songti SC",serif;margin:0 0 7px}.panel-head p{margin:0;color:var(--muted)}
+.smart-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.75fr);gap:18px}.smart-card,.settings-card,.history-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}.smart-card,.settings-card{padding:20px}.prompt-label{display:block;font-weight:750;margin-bottom:9px}.prompt{width:100%;min-height:150px;resize:vertical;border:1px solid #b9c3ce;border-radius:12px;padding:14px;font:16px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.smart-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.ai-state{font-size:13px;color:var(--muted)}.plan{display:none;margin-top:18px;padding:16px;border-left:4px solid var(--red);background:var(--red-soft);border-radius:4px 12px 12px 4px}.plan.open{display:block}.plan h3{margin:0 0 6px}.plan-grid{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.plan-chip{padding:5px 9px;background:#fff;border:1px solid #e7bbb5;border-radius:99px;font-size:13px}.ai-warning{margin-top:8px;color:#8a4f00}.settings-card h3{margin:0 0 5px}.settings-card p{margin:0 0 14px;color:var(--muted);font-size:13px}.settings-form{display:grid;gap:10px}.settings-form label{font-size:12px;color:var(--muted)}.settings-form input,.settings-form select{width:100%;margin-top:4px}.settings-actions{display:flex;gap:8px}.history-tools{display:flex;gap:9px}.history-tools input{min-width:280px}.history-list{display:grid;gap:12px}.history-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:18px 20px}.history-card h3{margin:0 0 4px;font-size:17px}.history-meta{display:flex;gap:9px;flex-wrap:wrap;color:var(--muted);font-size:13px}.history-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}.history-actions button{border:1px solid #b7c7d7;border-radius:8px;background:#fff;padding:8px 10px;color:#244b70}.history-actions .reuse{background:var(--blue);color:white;border-color:var(--blue)}.history-empty{padding:60px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:16px}
+.filters{position:sticky;top:0;z-index:12;display:grid;grid-template-columns:2fr repeat(6,minmax(110px,1fr));gap:9px;padding:12px clamp(18px,4vw,48px);background:rgba(245,242,235,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+input,select{min-width:0;border:1px solid #c7c2b7;border-radius:9px;background:#fff;padding:10px 11px;color:var(--ink)}
+input:focus,select:focus,button:focus-visible{outline:3px solid rgba(41,112,189,.25);outline-offset:1px}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:18px;max-width:1740px;margin:auto;padding:16px clamp(14px,3vw,38px) 60px}
+.summary-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;color:var(--muted)}.summary-tools{display:flex;align-items:center;gap:10px}.exclude-used{display:flex;align-items:center;gap:6px;white-space:nowrap;color:#36546f;font-size:13px}.exclude-used input{width:auto}
+.load-more,.ghost,.secondary,.primary,.danger{border-radius:9px;padding:9px 11px;border:1px solid #c7c2b7;background:#fff;color:var(--ink)}
+.primary{border-color:var(--blue);background:var(--blue);color:#fff;font-weight:700}.primary:disabled{cursor:not-allowed;opacity:.5}
+.secondary{border-color:#acc8e7;background:var(--blue-soft);color:#174e88}.danger{color:#9d2e2e;border-color:#e3bcbc;background:#fff8f8}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;overflow:hidden;box-shadow:0 5px 18px rgba(36,46,61,.06);transition:.18s ease}
+.card.selected{border-color:#1d5ea8;box-shadow:0 0 0 3px rgba(49,125,205,.18),var(--shadow)}
+.meta{padding:14px 15px 10px}.topline{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.selected-label{padding:3px 8px;border-radius:99px;background:#172231;color:#fff;font-size:12px;font-weight:800;visibility:hidden}.card.selected .selected-label{visibility:visible}.qid{font-weight:750}.topic{font-weight:650;margin:8px 0 2px}.small{font-size:12.5px;color:var(--muted)}
+.subtopic{margin-top:3px;color:#315d86;font-size:13px;font-weight:600}.badge{padding:3px 8px;border-radius:99px;font-size:12px;background:#e9eef4}.badge.Easy{background:#dcefe6;color:var(--easy)}.badge.Medium{background:#f8ead5;color:var(--medium)}.badge.Hard{background:#f4dddd;color:var(--hard)}
+.image-wrap{background:#ece9e2;border-top:1px solid var(--line);border-bottom:1px solid var(--line);height:auto;max-height:520px;overflow:auto}.image-wrap img{display:block;width:100%;height:auto;background:#fff;cursor:zoom-in}
+.actions{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:7px;padding:11px 13px}.actions button{border:1px solid #c7c2b7;border-radius:8px;background:#fff;padding:9px 7px}.actions .add{border-color:#94bce5;background:#edf5fd;color:#174e88;font-weight:700}.actions .add.remove{border-color:#4c8fd6;background:#1d5ea8;color:#fff}
+.answer{display:none}.answer.open{display:block}.answer .image-wrap{height:auto;max-height:450px}
+.empty{grid-column:1/-1;background:#fff;border:1px dashed #c8c1b5;border-radius:14px;padding:52px;text-align:center;color:var(--muted)}
+.basket{position:sticky;top:78px;align-self:start;max-height:calc(100vh - 94px);display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden}
+.basket-head,.basket-actions{flex:0 0 auto}.basket-head{padding:17px 17px 13px;border-bottom:1px solid var(--line)}.basket-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.basket h2{margin:0;font-size:20px}.basket-count{background:#172231;color:#fff;border-radius:999px;padding:3px 9px;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:12px}.stat{background:#f4f7fa;border-radius:9px;padding:8px}.stat b{display:block;font-size:18px}.stat span{font-size:12px;color:var(--muted)}
+.mix{margin-top:8px;font-size:12px;color:var(--muted)}
+.basket-body{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden}.basket-list{list-style:none;margin:0;padding:10px;min-height:80px}.basket-empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:14px}
+.basket-item{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 6px;border-bottom:1px solid #eee9df;background:#fff}.basket-item.dragging{opacity:.4}.drag{color:#91a0b1;cursor:grab;text-align:center}.basket-main{min-width:0}.basket-main b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.basket-main span{display:block;color:var(--muted);font-size:11.5px}.item-tools{display:flex;gap:3px}.item-tools button{width:25px;height:25px;padding:0;border:1px solid #d7d1c7;border-radius:7px;background:#fff;color:#536274}.item-tools .keep{width:auto;min-width:42px;padding:0 6px;font-size:11px;color:#315d86}.item-tools .keep.active{border-color:#94bce5;background:#edf5fd;color:#174e88;font-weight:700}
+.form{padding:13px 15px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;min-width:0}.field{display:flex;flex-direction:column;gap:4px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted)}.field input{padding:8px 9px;min-width:0;width:100%}.check{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:13px}.check input{width:auto}
+.basket-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 15px;border-top:1px solid var(--line)}.basket-actions button{padding:11px 9px}.basket-actions .full{grid-column:1/-1}.basket-actions .export-later{background:#fff;color:#526274;border-color:#d7d1c7;font-weight:650}
+.basket-expand{display:none;border:0;background:linear-gradient(180deg,#edf5fd,#f8fbff);color:#174e88;font-weight:750;cursor:pointer}.basket-expand span,.basket-expand b{display:block}.basket-expand b{font-size:12px;color:#52677f}
+.danger[data-armed="true"]{background:#9d2e2e;color:#fff;border-color:#9d2e2e}
+.result{display:none;margin:0 15px 14px;padding:12px;border-radius:11px;background:#edf9f3;border:1px solid #bce1ce}.result.open{display:block}.result h3{margin:0 0 6px;font-size:16px}.result-links{display:flex;gap:7px;flex-wrap:wrap}.result a,.result button{display:inline-block;text-decoration:none;border:1px solid #8dc7aa;border-radius:8px;padding:7px 9px;background:#fff;color:#176044;font-size:13px}
+.status{display:none;margin:0 15px 12px;padding:10px;border-radius:9px;background:#fff4dd;color:#81500c;font-size:13px}.status.open{display:block}.status.error{background:#fff0f0;color:#8f2f2f}
+.viewer{position:fixed;inset:0;z-index:40;display:none;background:rgba(12,18,27,.89);padding:17px}.viewer.open{display:flex;flex-direction:column}.viewer-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:1500px;width:100%;margin:0 auto 11px}.viewer-title{color:#fff;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.viewer-tools{display:flex;gap:7px;flex-wrap:wrap}.viewer-tools button{border:1px solid #62748a;border-radius:8px;background:#fff;padding:8px 10px}.viewer-stage{flex:1;min-height:0;overflow:auto;display:flex;align-items:flex-start;justify-content:center}.viewer-stage img{display:block;max-width:min(1200px,100%);height:auto;background:#fff;border-radius:8px;box-shadow:0 16px 60px rgba(0,0,0,.35)}.viewer-status{min-height:23px;color:#d8e5f5;text-align:center;padding-top:7px}.modal-open{overflow:hidden}
+.paper-preview{position:fixed;inset:0;z-index:45;display:none;flex-direction:column;background:#d8d5cf;overflow:hidden}.paper-preview.open{display:flex}.paper-preview-bar{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(16px,4vw,42px);background:rgba(23,34,49,.97);color:#fff;box-shadow:0 4px 18px rgba(23,34,49,.2)}.paper-preview-title{font:700 20px/1.2 Georgia,"Songti SC",serif}.paper-preview-meta{margin-top:3px;color:#c9d5e5;font-size:12px}.paper-preview-bar button{border:1px solid #7e91a8;border-radius:9px;background:#fff;color:#172231;padding:9px 13px;font-weight:700}.paper-preview-stage{position:relative;flex:1;min-height:0;padding:14px}.paper-preview-frame{display:block;width:100%;height:100%;border:0;border-radius:10px;background:#fff;box-shadow:0 12px 35px rgba(31,43,58,.16)}.paper-preview-loading{position:absolute;inset:14px;display:grid;place-items:center;border-radius:10px;background:#fff;color:var(--muted);font-weight:700}.paper-preview-loading[hidden]{display:none}@media(max-width:640px){.paper-preview-bar{align-items:flex-start}.paper-preview-title{font-size:17px}.paper-preview-stage{padding:8px}}
+.mobile-basket{display:none;position:fixed;right:14px;bottom:14px;z-index:20;border:0;border-radius:999px;background:#172231;color:#fff;padding:12px 16px;box-shadow:var(--shadow);font-weight:700}
+.notice{display:none;max-width:900px;margin:22px auto;padding:18px;background:#fff3d6;border:1px solid #e2c77e;border-radius:14px}.notice.open{display:block}
+@media(min-width:1101px){.app.basket-collapsed{grid-template-columns:minmax(0,1fr) 72px}.basket.collapsed{height:180px;min-height:180px}.basket.collapsed>:not(.basket-expand){display:none}.basket.collapsed .basket-expand{display:flex;height:100%;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:16px;font-size:14px}}
+@media(max-width:1100px){.app{grid-template-columns:minmax(0,1fr)}.basket{position:fixed;z-index:25;right:0;top:0;bottom:0;width:min(390px,92vw);max-height:none;border-radius:0;transform:translateX(102%);transition:.2s}.basket.open{transform:none}.mobile-basket{display:block}.hero-line{align-items:flex-start}.server-pill{display:none}.smart-layout{grid-template-columns:1fr}.history-card{grid-template-columns:1fr}.history-actions{justify-content:flex-start}}
+@media(max-width:760px){.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}.grid{grid-template-columns:1fr}.image-wrap{height:auto;max-height:520px}.hero{padding-left:16px;padding-right:16px}.actions{grid-template-columns:1fr 1fr}.actions .add{grid-column:1/-1}.summary-row{align-items:flex-start}.app{padding-left:10px;padding-right:10px}}
+.time-helper{margin-top:5px;color:var(--muted);font-size:12px}.time-helper button{border:0;background:none;color:var(--blue);padding:0;text-decoration:underline}.history-actions .delete{color:#a63333;border-color:#e1b8b8}.deleted-section{margin-top:24px}.deleted-section summary{cursor:pointer;font-weight:700;margin-bottom:12px}.history-notice{min-height:22px;color:#176044;margin:0 0 10px}
+.marking-shell{display:grid;grid-template-columns:minmax(320px,.72fr) minmax(0,1.45fr);gap:18px;align-items:start}.marking-intake,.marking-review{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:20px}.marking-intake{position:sticky;top:18px}.marking-flow{display:grid;gap:13px}.marking-flow label{font-weight:700;font-size:13px}.marking-flow input,.marking-flow select{display:block;width:100%;margin-top:5px}.marking-help{padding:12px;border-radius:10px;background:var(--blue-soft);color:#244b70;font-size:13px}.marking-status{min-height:22px;color:var(--muted);font-size:13px}.marking-status.error{color:#9d2e2e}.marking-review{min-height:330px}.marking-empty{display:grid;place-items:center;min-height:280px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px;padding:30px}.marking-summary{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--line)}.marking-score{font:700 25px/1 Georgia,"Songti SC",serif;color:var(--blue);white-space:nowrap}.marking-items{display:grid;gap:11px;margin-top:15px}.marking-item{border:1px solid var(--line);border-left:5px solid var(--blue);border-radius:11px;padding:14px}.marking-item.review{border-left-color:var(--red);background:#fffaf8}.marking-item-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.marking-item-head h3{margin:0;font-size:15px}.confidence{font-size:12px;color:var(--muted)}.marking-evidence{margin:9px 0;color:#315d86;font-size:13px}.marking-controls{display:grid;grid-template-columns:120px 1fr;gap:9px}.marking-controls input,.marking-controls textarea{width:100%;border:1px solid #c7c2b7;border-radius:8px;padding:9px;background:#fff;font:inherit}.marking-controls textarea{min-height:72px;resize:vertical}.teacher-check{display:flex;align-items:center;gap:7px;margin-top:10px;font-size:13px;font-weight:700}.teacher-check input{width:auto}.marking-final{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:16px;padding-top:15px;border-top:1px solid var(--line)}.marking-result{display:none;margin-top:14px;padding:13px;border:1px solid #bce1ce;border-radius:10px;background:#edf9f3}.marking-result.open{display:block}
+@media(max-width:900px){.marking-shell{grid-template-columns:1fr}.marking-intake{position:static}.marking-controls{grid-template-columns:1fr}}
+</style>
+<link rel="stylesheet" href="/export-feedback.css">
+<script src="/export-feedback.js" defer></script>
+</head>
+<body><link rel="stylesheet" href="/web-shell.css"><nav class="web-shell"><b>工作区</b><a href="/">AI 组卷与批改</a><a href="/opbp">OPBP 组卷</a><a class="copyright" href="/copyright" target="_blank">OPBP · 版权说明</a></nav><script>if(window.webkit?.messageHandlers?.copyImage)document.querySelector(".web-shell").hidden=true;</script>
+<header class="hero"><div class="hero-line"><div><h1>物理题库</h1><div class="subtitle">OPBP 原题 · 按 9702 考纲分类 · 筛题与调整</div></div><div class="hero-actions"><a class="brand-link" href="https://github.com/Laura-LLU" target="_blank" rel="noopener noreferrer" aria-label="Laura-LLU 的 GitHub 主页"><span class="brand-mark">L</span>Laura-LLU</a><button class="contact-trigger" type="button" onclick="document.getElementById('contactDialog').showModal()" aria-haspopup="dialog" aria-controls="contactDialog">联系作者</button><div class="server-pill" id="serverPill">正在连接本地题库…</div></div></div><nav class="workspace-tabs" aria-label="主要功能"><button class="workspace-tab active" data-view="browse" onclick="switchView('browse')">组卷</button><button class="workspace-tab" data-view="history" onclick="switchView('history')">我的试卷</button></nav></header>
+<section class="view active" id="browseView">
+<section class="filters">
+  <input id="search" placeholder="搜索题号、Topic或题目内容">
+  <select id="topic"><option value="">全部一级 Topic</option></select>
+  <select id="subtopic"><option value="">全部二级知识点</option></select>
+  <select id="difficulty" title="按简单、中等、困难筛选"><option value="">全部难度</option><option value="Easy">Easy · 简单</option><option value="Medium">Medium · 中等</option><option value="Hard">Hard · 困难</option></select>
+  <select id="paperType"><option value="">全部题型</option></select>
+  <select id="year"><option value="">全部年份</option></select>
+  <select id="session"><option value="">全部考季</option></select>
+</section>
+<div class="notice" id="notice"><b>没有连接到 9702 本地题库。</b><br>请退出并重新打开“物理题库”桌面应用。</div>
+<div class="app" id="appLayout">
+  <main>
+    <div class="summary-row"><div id="summary">正在载入题库…</div><div class="summary-tools"><label class="exclude-used"><input id="excludeUsed" type="checkbox">排除历史题 <span id="usedCount"></span></label><button class="load-more" id="loadMore" onclick="showMore()">显示更多</button></div></div>
+    <section class="grid" id="grid"></section>
+  </main>
+  <aside class="basket" id="basket">
+    <button class="basket-expand" onclick="toggleBasket()" aria-label="展开选题篮"><span>展开</span><span>选题篮</span><b id="collapsedCount">0题</b></button>
+    <div class="basket-head">
+      <div class="basket-title"><h2>作业选题篮</h2><span class="basket-count" id="basketCount">0题</span></div>
+      <div class="stats"><div class="stat"><b id="totalMarks">0</b><span>试卷总分</span></div><div class="stat"><b id="estimatedTime">0</b><span>建议分钟</span></div></div>
+      <div class="mix" id="difficultyMix">Easy 0 · Medium 0 · Hard 0</div>
+    </div>
+    <div class="basket-feedback" id="pdfExportFeedbackSlot"></div>
+    <div class="basket-body">
+      <ol class="basket-list" id="basketList"></ol>
+      <div class="form">
+        <div class="field full"><label for="title">作业名称</label><input id="title" value="OPBP 物理题库 · 模拟练习"></div>
+        <div class="field"><label for="className">班级</label><input id="className" placeholder="可不填"></div>
+        <div class="field"><label for="studentName">学生</label><input id="studentName" placeholder="可不填"></div>
+        <div class="field"><label for="dueDate">日期</label><input id="dueDate" type="date"></div>
+        <div class="field"><label for="timeLimit">限时（分钟）</label><input id="timeLimit" type="number" min="1" max="9999" placeholder="选题后自动填写"><div class="time-helper"><span id="timeEstimateHint">选题后自动估算</span> <button type="button" id="useEstimate" onclick="useEstimatedTime()" hidden>使用建议时间</button></div></div>
+        <label class="check"><input id="showSource" type="checkbox">学生卷中显示原题出处</label>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+    <div class="basket-actions"><button class="danger" id="clearBtn" data-armed="false" onclick="clearBasket()">清空</button><button class="secondary" onclick="toggleBasket()">收起</button><button class="primary full" id="previewBtn" onclick="openPaperPreview()" disabled>预览整份试卷 PDF</button><button class="secondary full export-later" id="exportBtn" onclick="exportHomework()" disabled>请先预览整份试卷</button></div>
+  </aside>
+</div>
+<button class="mobile-basket" onclick="openBasket()">选题篮 <span id="mobileCount">0</span></button>
+</section>
+<section class="view" id="smartView"><div class="workspace-panel"><div class="panel-head"><div><h2>用一句话生成试卷</h2><p>AI只理解要求；题号、原题、答案和分值全部由本地题库核验。</p></div></div><div class="smart-layout"><div class="smart-card"><label class="prompt-label" for="aiPrompt">这次要怎样组卷？</label><textarea class="prompt" id="aiPrompt" placeholder="例如：出一份60分钟AS力学练习，动量和功能各占一半，中等为主，选择题和大题都要，避开做过的题。"></textarea><div class="smart-actions"><button class="primary" id="planBtn" onclick="createAiPaper(false)">生成候选试卷</button><button class="secondary" id="againBtn" onclick="createAiPaper(true)" disabled>保留指定题，换一套</button><span class="ai-state" id="aiState">正在检查模型接口…</span></div><div class="plan" id="planResult"></div></div><aside class="settings-card"><h3>模型接口</h3><p>组卷使用文字模型；批改还需要一个支持图片理解的视觉模型。OPBP 工作区共用设置，密钥保存在 Mac 钥匙串中。</p><div class="settings-form"><label>快速选择<select id="providerPreset" onchange="applyProviderPreset()"><option value="">自定义</option><option value="qwen">阿里云百炼 · qwen3.8-flash</option><option value="deepseek">DeepSeek · deepseek-chat</option><option value="local">本机 Qwen3 4B</option></select></label><label>服务名称<input id="providerName" value="OpenAI-compatible"></label><label>接口地址<input id="baseUrl" placeholder="https://…/v1"></label><label>组卷模型<input id="modelName" placeholder="例如 qwen3.8-flash"></label><label>批改视觉模型<input id="markingModel" placeholder="例如 qwen3-vl-plus"></label><label>API Key<input id="apiKey" type="password" autocomplete="new-password" placeholder="首次配置必须填写；已保存时可留空"></label><div class="settings-actions"><button class="primary" onclick="saveAiSettings()">仅保存设置</button><button class="secondary" onclick="testAiConnection()">保存并测试</button></div><div class="ai-state" id="settingsState"></div></div></aside></div></div></section>
+<section class="view" id="markingView"><div class="workspace-panel"><div class="panel-head"><div><h2>AI 批改</h2><p>从“我的试卷”匹配OPBP题号与教师评分表，生成评分草稿；教师逐题确认后再导出。</p></div></div><div class="marking-shell"><aside class="marking-intake"><div class="marking-flow"><label>对应试卷<select id="markingAssignment"><option value="">请选择已导出的试卷</option></select></label><label>学生姓名<input id="markingStudent" placeholder="可不填"></label><label>已完成答卷<input id="markingFile" type="file" accept="application/pdf,image/jpeg,image/png"></label><div class="marking-help"><b>安全边界</b><br>答卷只保存在这台 Mac 的试卷文件夹中。AI 结果是草稿；看不清或无法匹配的题会自动标为“需复核”。一次支持最多 12 页、20 MB。</div><button class="primary" id="markingStart" onclick="createMarkingDraft()">生成 AI 评分草稿</button><div class="marking-status" id="markingStatus" role="status"></div></div></aside><main class="marking-review" id="markingReview"><div class="marking-empty">先选择一份已导出的试卷，再上传学生完成后的 PDF 或照片。</div></main></div></div></section>
+<section class="view" id="historyView"><div class="workspace-panel"><div class="panel-head"><div><h2>我的试卷</h2><p>打开旧卷、恢复选题篮，或删除不再需要的试卷。</p></div><div class="history-tools"><input id="historySearch" placeholder="搜索名称、班级或日期" oninput="renderHistory()"></div></div><div class="history-notice" id="historyNotice" role="status"></div><div class="history-list" id="historyList"><div class="history-empty">正在读取历史试卷…</div></div><details class="deleted-section"><summary>最近删除（<span id="deletedCount">0</span>）</summary><div class="history-list" id="deletedHistoryList"></div></details></div></section>
+<dialog class="contact-dialog" id="contactDialog" aria-labelledby="contactTitle"><div class="contact-dialog-inner"><div class="contact-head"><span class="brand-mark" aria-hidden="true">L</span><h2 id="contactTitle">联系 Laura-LLU</h2></div><p class="contact-hint">社交平台请搜索以下账号名称。</p><dl class="contact-list"><div class="contact-row"><dt>邮箱</dt><dd><a href="mailto:LLUPAT@163.com">LLUPAT@163.com</a></dd></div><div class="contact-row"><dt>GitHub</dt><dd><a href="https://github.com/Laura-LLU" target="_blank" rel="noopener noreferrer">github.com/Laura-LLU</a></dd></div><div class="contact-row"><dt>抖音/小红书</dt><dd>Laura🍉</dd></div></dl><form method="dialog"><button type="submit">关闭</button></form></div></dialog>
+<div class="viewer" id="viewer" aria-hidden="true" role="dialog" aria-modal="true" aria-label="图片预览">
+  <div class="viewer-bar"><div class="viewer-title" id="viewerTitle">图片预览</div><div class="viewer-tools"><button onclick="copyViewerImage()">复制图片</button><button onclick="downloadViewerImage()">下载图片</button><button onclick="openViewerImage()">新窗口打开</button><button onclick="closeViewer()">关闭</button></div></div>
+  <div class="viewer-stage"><img id="viewerImage" alt="大图预览"></div><div class="viewer-status" id="viewerStatus"></div>
+</div>
+<div class="paper-preview" id="paperPreview" aria-hidden="true" role="dialog" aria-modal="true" aria-label="整份试卷预览">
+  <div class="paper-preview-bar"><div><div class="paper-preview-title">整份试卷预览</div><div class="paper-preview-meta" id="paperPreviewMeta"></div></div><button type="button" onclick="closePaperPreview()">返回选题篮</button></div>
+  <main class="paper-preview-stage"><div class="paper-preview-loading" id="paperPreviewLoading">正在生成完整学生卷 PDF…</div><iframe class="paper-preview-frame" id="paperPreviewFrame" title="完整学生卷 PDF 预览"></iframe></main>
+</div>
+<script>
+const state={bank:[],catalog:[],byId:new Map(),filtered:[],selected:[],reviewOrder:[],history:[],deletedHistory:[],usedIds:new Set(),aiPlan:null,aiDraft:[],aiVariant:0,lockedIds:new Set(),markingDraft:null,limit:60,viewerUrl:'',viewerName:'',timeMode:'auto',estimatedMinutes:0,previewUrl:'',previewFingerprint:''};
+const $=id=>document.getElementById(id);
+const STORAGE_KEY='lauraphysics-opbp-9702-v1';
+const fieldIds=['title','className','studentName','dueDate','timeLimit','showSource'];
+
+function esc(value){return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function unique(values){return [...new Set(values)].filter(Boolean).sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}))}
+function expandLegacySelection(ids){return [...new Set((Array.isArray(ids)?ids:[]).flatMap(id=>state.legacySelection?.get(id)||[id]))].filter(id=>state.byId.has(id))}
+function saveState(){
+  const form={};fieldIds.forEach(id=>form[id]=$(id).type==='checkbox'?$(id).checked:$(id).value);
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({selected:state.selected,reviewOrder:state.reviewOrder,lockedIds:[...state.lockedIds],aiPlan:state.aiPlan,aiPrompt:$('aiPrompt')?.value||'',form,timeMode:state.timeMode}));
+}
+function switchView(name){
+  if(name==='marking'){location.href=(window.webkit?.messageHandlers?.copyImage&&location.port==='8787'?'http://127.0.0.1:8785':'')+'/?view=marking';return}
+  document.querySelectorAll('.view').forEach(view=>view.classList.toggle('active',view.id===`${name}View`));
+  document.querySelectorAll('.workspace-tab').forEach(tab=>tab.classList.toggle('active',tab.dataset.view===name));
+  document.querySelector('.mobile-basket').style.display=name==='browse'&&window.innerWidth<=1100?'block':'none';
+  if(name==='history'||name==='marking')loadHistory();
+}
+function migrateTopicPlan(plan,bank){
+  if(!plan||typeof plan!=='object')return plan;
+  const topics=new Map(),subs=new Map(),topicLabels=new Set(),subLabels=new Set();
+  bank.forEach(q=>{(q.topicLabels||[q.topic]).forEach((label,i)=>{topicLabels.add(label);topics.set((q.officialTopicLabels||q.topicLabels||[q.topic])[i],label)});(q.subtopics||[q.subtopic]).forEach((label,i)=>{subLabels.add(label);subs.set((q.officialSubtopics||q.subtopics||[q.subtopic])[i],label)})});
+  const topic=label=>topicLabels.has(label)?label:(topics.get(label)||label),sub=label=>subLabels.has(label)?label:(subs.get(label)||label);
+  return {...plan,topics:(plan.topics||[]).map(entry=>typeof entry==='string'?topic(entry):({...entry,label:topic(entry.label)})),subtopics:(plan.subtopics||[]).map(sub),excludeTopics:(plan.excludeTopics||[]).map(topic)};
+}
+function restoreState(){
+  try{const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');state.selected=expandLegacySelection(saved.selected);state.reviewOrder=expandLegacySelection(saved.reviewOrder);state.limit=Math.max(60,state.reviewOrder.length);state.lockedIds=new Set(expandLegacySelection(saved.lockedIds).filter(id=>state.selected.includes(id)));state.aiPlan=migrateTopicPlan(saved.aiPlan&&typeof saved.aiPlan==='object'?saved.aiPlan:null,state.bank);if($('aiPrompt'))$('aiPrompt').value=saved.aiPrompt||'';Object.entries(saved.form||{}).forEach(([id,value])=>{if(!$(id))return;$(id).type==='checkbox'?$(id).checked=Boolean(value):$(id).value=value});state.timeMode=saved.timeMode==='manual'||(!saved.timeMode&&saved.form?.timeLimit)?'manual':'auto'}catch(_){state.selected=[];state.lockedIds=new Set();state.timeMode='auto'}
+}
+function applyIncomingDraft(){
+  const params=new URLSearchParams(location.search);if(!params.has('draftIds'))return;
+  state.selected=expandLegacySelection((params.get('draftIds')||'').split(',').map(value=>value.trim()));state.reviewOrder=state.selected.slice();state.limit=Math.max(60,state.reviewOrder.length);state.lockedIds=new Set();
+  if(params.get('draftTitle'))$('title').value=params.get('draftTitle');if(params.get('draftTime')){$('timeLimit').value=params.get('draftTime');state.timeMode='manual'}else state.timeMode='auto';
+  if(params.get('draftPrompt'))$('aiPrompt').value=params.get('draftPrompt');state.aiPlan=null;saveState();history.replaceState({},document.title,location.pathname);switchView('browse');
+}
+function fillSelect(id,values){const select=$(id);const first=select.options[0].outerHTML;select.innerHTML=first+values.map(value=>`<option>${esc(value)}</option>`).join('')}
+function fillCatalogSelect(id,items){items=items.filter(item=>(item.questionCount??1)>0);const select=$(id);const first=select.options[0].outerHTML;select.innerHTML=first+items.filter((item,i,all)=>all.findIndex(x=>x.label===item.label)===i).map(item=>`<option value="${esc(item.label)}">${esc(item.label)}</option>`).join('')}
+function updateSubtopics(preserve=true){const topic=$('topic').value;const current=preserve?$('subtopic').value:'';const groups=topic?state.catalog.filter(group=>group.label===topic):state.catalog;fillCatalogSelect('subtopic',groups.flatMap(group=>group.subtopics||[]));if([...$('subtopic').options].some(option=>option.value===current))$('subtopic').value=current}
+function bindFilters(){['search','difficulty','paperType','year','session','subtopic'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',()=>{state.limit=60;render()}));$('topic').addEventListener('change',()=>{state.limit=60;updateSubtopics(false);render()});$('excludeUsed').addEventListener('change',()=>{state.limit=60;render()});fieldIds.filter(id=>id!=='timeLimit').forEach(id=>$(id).addEventListener('input',()=>{saveState();invalidatePaperPreview()}));$('timeLimit').addEventListener('input',()=>{state.timeMode=$('timeLimit').value?'manual':'auto';if(state.timeMode==='auto')renderBasket();else updateTimeHint();saveState();invalidatePaperPreview()})}
+
+async function init(){
+  bindFilters();
+  try{
+    const health=await fetch('/api/health');if(!health.ok)throw new Error('health');await health.json();
+    const [data,catalog]=await Promise.all([fetch('/api/bank').then(response=>response.json()),fetch('/api/catalog').then(response=>response.json())]);
+    state.bank=data;state.catalog=catalog;state.byId=new Map(data.map(item=>[item.id,item]));
+    state.legacySelection=new Map();data.forEach(q=>{if(q.legacyQuestionId){if(!state.legacySelection.has(q.legacyQuestionId))state.legacySelection.set(q.legacyQuestionId,[]);state.legacySelection.get(q.legacyQuestionId).push(q.id)}});
+    fillCatalogSelect('topic',catalog);updateSubtopics();fillSelect('paperType',unique(data.map(x=>x.paperType)));fillSelect('year',unique(data.map(x=>x.year)).sort((a,b)=>b-a));fillSelect('session',unique(data.map(x=>x.session)));
+    restoreState();applyIncomingDraft();$('title').value=OPBPLabels.paperTitle($('title').value);render();renderBasket();$('serverPill').textContent=`本地题库已连接 · ${data.length.toLocaleString()}题`;
+    await Promise.all([loadHistory(),loadAiSettings()]);
+  }catch(error){$('notice').classList.add('open');$('serverPill').textContent='未连接';$('summary').textContent='请先启动本地组卷工具';$('loadMore').style.display='none'}
+}
+
+function applyApiKeyMode(isLocal){
+  $('apiKey').disabled=Boolean(isLocal);
+  $('apiKey').value='';
+  $('apiKey').placeholder=isLocal?'本地模型无需 API Key':'首次使用当前服务必须填写；已保存时可留空';
+}
+function applyProviderPreset(){
+  const preset=$('providerPreset').value;
+  if(preset==='qwen'){applyApiKeyMode(false);$('providerName').value='阿里云百炼';$('baseUrl').value='https://dashscope.aliyuncs.com/compatible-mode/v1';$('modelName').value='qwen3.8-flash';$('markingModel').value='qwen3.7-plus';$('settingsState').textContent='组卷使用 qwen3.8-flash，批改使用 qwen3.7-plus；已保存的百炼密钥可直接使用。'}
+  if(preset==='deepseek'){applyApiKeyMode(false);$('providerName').value='DeepSeek';$('baseUrl').value='https://api.deepseek.com';$('modelName').value='deepseek-chat';$('markingModel').value='';$('settingsState').textContent='DeepSeek 使用独立密钥；首次使用请填写。当前仅支持组卷。'}
+  if(preset==='local'){applyApiKeyMode(true);$('providerName').value='本机 Qwen3';$('baseUrl').value='http://127.0.0.1:11434/v1';$('modelName').value='qwen3:4b';$('markingModel').value='';$('settingsState').textContent='本地模型无需 API Key；请先启动 Ollama 并安装 qwen3:4b。当前仅支持组卷。'}
+}
+function syncLocalPresetOption(available){
+  const select=$('providerPreset');
+  const option=select.querySelector('option[value="local"]');
+  if(!available&&option)option.remove();
+  if(available&&!option){const item=document.createElement('option');item.value='local';item.textContent='本机 Qwen3 4B';select.appendChild(item)}
+}
+async function loadAiSettings(){
+  try{const settings=await fetch('/api/ai/settings').then(response=>response.json());syncLocalPresetOption(settings.localModelAvailable);$('providerName').value=settings.providerName||'OpenAI-compatible';$('baseUrl').value=settings.baseUrl||'';$('modelName').value=settings.model||'';$('markingModel').value=settings.markingModel||'';$('providerPreset').value=['qwen','deepseek','local'].includes(settings.credentialProfile)?settings.credentialProfile:'';applyApiKeyMode(settings.isLocal);$('aiState').textContent=settings.configured?`模型已设置 · ${settings.model}`:'请先在右侧设置模型接口';$('settingsState').textContent=settings.isLocal?'本地模型无需密钥；测试会检查 Ollama 是否已启动':(settings.credentialStored?`当前服务的 API Key 已保存在 Mac 钥匙串中${settings.markingModel?` · 批改 ${settings.markingModel}`:' · 当前仅支持组卷'}`:'请填写当前服务的 API Key')}catch(error){$('aiState').textContent='无法读取模型设置'}
+}
+function aiSettingsPayload(){return {providerName:$('providerName').value,baseUrl:$('baseUrl').value,model:$('modelName').value,markingModel:$('markingModel').value,apiKey:$('apiKey').value}}
+async function saveAiSettings(){
+  $('settingsState').textContent='正在保存…';
+  try{const response=await fetch('/api/ai/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(aiSettingsPayload())});const data=await response.json();if(!data.ok)throw new Error(data.error||'保存失败');if(!data.settings.configured)throw new Error(data.settings.requiresApiKey?'请填写当前服务的 API Key（首次使用必须填写）':'模型设置不完整');$('apiKey').value='';$('settingsState').textContent=data.settings.isLocal?'本地模型设置已保存，不会改动云端密钥':'当前服务的设置和密钥已保存';$('aiState').textContent=`模型已设置 · ${data.settings.model}`}catch(error){$('settingsState').textContent=`保存失败：${error.message}`}
+}
+async function testAiConnection(){
+  $('settingsState').textContent='正在分别测试组卷文字模型和批改视觉模型…';
+  try{const saveResponse=await fetch('/api/ai/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(aiSettingsPayload())});const saved=await saveResponse.json();if(!saved.ok)throw new Error(saved.error||'保存失败');if(!saved.settings.configured)throw new Error(saved.settings.requiresApiKey?'请填写当前服务的 API Key（首次使用必须填写）':'模型设置不完整');$('apiKey').value='';const response=await fetch('/api/ai/test',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});const data=await response.json();if(!data.ok)throw new Error(data.error||'连接失败');$('settingsState').textContent=data.visionTested?`连接成功：组卷 ${data.textModel} · 批改 ${data.markingModel}`:`文字模型 ${data.textModel} 连接成功；AI批改需另配视觉模型`;$('aiState').textContent=`模型已设置 · ${saved.settings.model}`}catch(error){$('settingsState').textContent=`连接失败：${error.message}`}
+}
+function aiPlanChips(plan){
+  const chips=[];(plan.topics||[]).forEach(item=>chips.push(`${item.label} · ${item.weight}份`));(plan.subtopics||[]).forEach(value=>chips.push(value));(plan.excludeTopics||[]).forEach(value=>chips.push(`排除 ${value}`));(plan.paperTypes||[]).forEach(value=>chips.push(value));Object.entries(plan.difficultyMix||{}).filter(([,value])=>Number(value)>0).forEach(([key,value])=>chips.push(`${key} ${value}`));if(plan.questionCount)chips.push(`${plan.questionCount}题`);if(plan.targetMarks)chips.push(`${plan.targetMarks}分`);if(plan.targetMinutes)chips.push(`${plan.targetMinutes}分钟`);if(plan.excludeUsed)chips.push('排除历史题');return chips
+}
+function renderAiDraft(data){
+  const warnings=(data.warnings||[]).map(value=>`<div class="ai-warning">${esc(value)}</div>`).join('');const chips=aiPlanChips(data.plan);$('planResult').innerHTML=`<h3>${esc(data.plan.title)}</h3><div>${esc(data.plan.summary)}</div><div class="plan-grid">${chips.map(value=>`<span class="plan-chip">${esc(value)}</span>`).join('')}</div><div><b>${data.questionCount}题</b> · 已知${data.knownMarks}分 · 建议约${data.estimatedMinutes}分钟</div>${warnings}<div class="smart-actions"><button class="primary" onclick="applyAiPaper()">放入选题篮并检查</button></div>`;$('planResult').classList.add('open');$('againBtn').disabled=!data.selectedIds.length
+}
+async function createAiPaper(reusePlan){
+  const prompt=$('aiPrompt').value.trim();if(!reusePlan&&!prompt){$('aiState').textContent='请先输入组卷要求';return}if(reusePlan&&!state.aiPlan){$('aiState').textContent='请先生成一套试卷';return}
+  $('planBtn').disabled=true;$('againBtn').disabled=true;$('aiState').textContent=reusePlan?'正在保留指定题并换一套…':'正在理解要求并从本地题库选题…';$('planResult').classList.remove('open');if(reusePlan)state.aiVariant+=1;else state.aiVariant=0;
+  try{const body=reusePlan?{plan:state.aiPlan,lockedIds:[...state.lockedIds],variant:state.aiVariant}:{prompt,lockedIds:[...state.lockedIds],variant:state.aiVariant};const response=await fetch('/api/ai/compose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await response.json();if(!data.ok)throw new Error(data.error||'组卷失败');state.aiPlan=data.plan;state.aiDraft=data.selectedIds||[];renderAiDraft(data);$('aiState').textContent='候选试卷已生成，请检查后放入选题篮';saveState()}catch(error){$('aiState').textContent=`组卷失败：${error.message}`}finally{$('planBtn').disabled=false;$('againBtn').disabled=!state.aiDraft.length}
+}
+function applyAiPaper(){
+  state.selected=state.aiDraft.filter(id=>state.byId.has(id));state.lockedIds=new Set([...state.lockedIds].filter(id=>state.selected.includes(id)));$('title').value=state.aiPlan?.title||$('title').value;if(state.aiPlan?.targetMinutes){$('timeLimit').value=state.aiPlan.targetMinutes;state.timeMode='manual'}else state.timeMode='auto';saveState();render();renderBasket();switchView('browse');openBasket(false)
+}
+function toggleAiLock(id){state.lockedIds.has(id)?state.lockedIds.delete(id):state.lockedIds.add(id);saveState();renderBasket()}
+
+async function loadHistory(){
+  try{const [response,deletedResponse]=await Promise.all([fetch('/api/history?course=9702'),fetch('/api/history/deleted')]);if(!response.ok||!deletedResponse.ok)throw new Error('读取失败');state.history=await response.json();state.deletedHistory=await deletedResponse.json();state.usedIds=new Set(state.history.flatMap(record=>record.selectedIds||[]));$('usedCount').textContent=state.usedIds.size?`(${state.usedIds.size})`:'';renderHistory();populateMarkingAssignments();if($('excludeUsed').checked)render()}catch(error){$('historyList').innerHTML=`<div class="history-empty">历史试卷读取失败：${esc(error.message)}</div>`}
+}
+function renderHistory(){
+  const query=($('historySearch')?.value||'').trim().toLowerCase();const records=state.history.filter(record=>`${record.title} ${record.className} ${record.createdAt} ${record.origin}`.toLowerCase().includes(query));
+  $('historyList').innerHTML=records.length?records.map(record=>{const date=(record.createdAt||'').slice(0,10);const detail=[date,record.className,record.questionCount?`${record.questionCount} 题`:'',record.marks?`${record.marks} 分`:'',record.minutes?`约 ${Math.round(record.minutes)} 分钟`:'',record.origin].filter(Boolean).map(esc).join(' · ');return `<article class="history-card"><div><h3>${esc(record.title)}</h3><div class="history-meta">${detail}</div></div><div class="history-actions">${record.studentAvailable?`<button onclick="openHistory('${record.id}','student')">学生卷</button>`:''}${record.teacherAvailable?`<button onclick="openHistory('${record.id}','teacher')">答案卷</button>`:''}${record.studentAvailable&&record.teacherAvailable?`<button onclick="startMarkingFor('${record.id}')">AI批改</button>`:''}<button onclick="openHistory('${record.id}','reveal')">访达</button><button class="reuse" onclick="reuseHistory('${record.id}')">恢复选题篮</button><button class="delete" onclick="deleteHistory('${record.id}',this)">删除</button></div></article>`}).join(''):`<div class="history-empty">没有找到符合条件的历史试卷。</div>`;
+  const deleted=state.deletedHistory.filter(record=>`${record.title} ${record.deletedAt} ${record.origin}`.toLowerCase().includes(query));$('deletedCount').textContent=state.deletedHistory.length;
+  $('deletedHistoryList').innerHTML=deleted.length?deleted.map(record=>`<article class="history-card"><div><h3>${esc(record.title)}</h3><div class="history-meta">${esc((record.deletedAt||'').slice(0,10))} 删除 · ${esc(record.origin)} · 可恢复</div></div><div class="history-actions"><button onclick="restoreHistory('${record.id}')">恢复试卷</button></div></article>`).join(''):`<div class="history-empty">最近删除中没有试卷。</div>`;
+}
+function populateMarkingAssignments(){
+  const select=$('markingAssignment');if(!select)return;const current=select.value;const records=state.history.filter(record=>record.studentAvailable&&record.teacherAvailable);select.innerHTML='<option value="">请选择已导出的试卷</option>'+records.map(record=>`<option value="${esc(record.id)}">${esc((record.createdAt||'').slice(0,10))} · ${esc(record.title)} · ${record.questionCount}题</option>`).join('');if(records.some(record=>record.id===current))select.value=current
+}
+function startMarkingFor(recordId){location.href=`${window.webkit?.messageHandlers?.copyImage&&location.port==='8787'?'http://127.0.0.1:8785':''}/?view=marking&record=${encodeURIComponent(recordId)}`}
+function markingItemsFromPage(){return [...document.querySelectorAll('.marking-item')].map(card=>({id:card.dataset.id,score:Number(card.querySelector('.mark-score').value),comment:card.querySelector('.mark-comment').value,teacherApproved:card.querySelector('.mark-approved').checked}))}
+function markingTotal(){const items=markingItemsFromPage();const score=items.reduce((sum,item)=>sum+(Number.isFinite(item.score)?item.score:0),0);const maximum=(state.markingDraft?.items||[]).reduce((sum,item)=>sum+Number(item.maximum||0),0);$('markingTotal').textContent=`${Number(score.toFixed(1))} / ${Number(maximum.toFixed(1))}`}
+function renderMarkingDraft(data){
+  state.markingDraft=data;const score=Number(data.totalScore||0),maximum=Number(data.totalMaximum||0);const cards=(data.items||[]).map(item=>`<article class="marking-item ${item.status==='review'?'review':''}" data-id="${esc(item.id)}"><div class="marking-item-head"><h3>第 ${item.order} 题 · ${esc(item.source)}</h3><span class="confidence">${item.status==='review'?'需复核':'AI建议'} · 置信度 ${Math.round(Number(item.confidence||0)*100)}%</span></div><div class="marking-evidence"><b>作答证据：</b>${esc(item.evidence||'未识别')}</div><div class="marking-controls"><label>得分 / ${item.maximum}<input class="mark-score" type="number" min="0" max="${item.maximum}" step="0.5" value="${item.score}" oninput="markingTotal()"></label><label>评分理由<textarea class="mark-comment">${esc(item.comment)}</textarea></label></div><label class="teacher-check"><input class="mark-approved" type="checkbox">我已核对本题分数与评语</label></article>`).join('');
+  $('markingReview').innerHTML=`<div class="marking-summary"><div><h3 style="margin:0 0 5px">${esc(data.assignmentTitle)}</h3><div class="small">${esc(data.draftNotice)} · ${data.reviewCount} 题需重点复核</div></div><div class="marking-score" id="markingTotal">${score} / ${maximum}</div></div><div class="marking-items">${cards}</div><div class="marking-final"><button class="secondary" onclick="approveAllMarkingItems()">全部标记为已核对</button><button class="primary" id="markingFinalize" onclick="finalizeMarking()">确认并生成批改反馈 PDF</button></div><div class="marking-result" id="markingResult"></div>`
+}
+function approveAllMarkingItems(){document.querySelectorAll('.mark-approved').forEach(input=>input.checked=true)}
+async function createMarkingDraft(){
+  const recordId=$('markingAssignment').value,file=$('markingFile').files[0];if(!recordId){$('markingStatus').textContent='请先选择对应试卷。';$('markingStatus').className='marking-status error';return}if(!file){$('markingStatus').textContent='请选择学生完成后的答卷文件。';$('markingStatus').className='marking-status error';return}if(file.size>20*1024*1024){$('markingStatus').textContent='答卷超过20 MB，请压缩后再上传。';$('markingStatus').className='marking-status error';return}
+  $('markingStart').disabled=true;$('markingStatus').className='marking-status';$('markingStatus').textContent='正在读取答卷，并按本地试卷题号匹配官方答案…';$('markingReview').innerHTML='<div class="marking-empty">AI 正在逐题生成评分草稿，请稍候。</div>';
+  try{const fileData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',',2)[1]);reader.onerror=()=>reject(new Error('答卷读取失败'));reader.readAsDataURL(file)});const response=await fetch('/api/marking/start',{method:'POST',headers:{'Content-Type':'application/json','X-PhysicsBank-Action':'1'},body:JSON.stringify({recordId,studentName:$('markingStudent').value,filename:file.name,mimeType:file.type,fileData})});const data=await response.json();if(!data.ok)throw new Error(data.error||'批改失败');renderMarkingDraft(data);$('markingStatus').textContent=`评分草稿已生成：${data.items.length}题，其中${data.reviewCount}题需重点复核。`}catch(error){$('markingStatus').textContent=`批改失败：${error.message}`;$('markingStatus').className='marking-status error';$('markingReview').innerHTML='<div class="marking-empty">未生成评分草稿，请检查模型设置和答卷文件。</div>'}finally{$('markingStart').disabled=false}
+}
+async function finalizeMarking(){
+  if(!state.markingDraft)return;const items=markingItemsFromPage();if(items.some(item=>!item.teacherApproved)){$('markingStatus').textContent='请逐题核对并勾选；也可以先使用“全部标记为已核对”。';$('markingStatus').className='marking-status error';return}$('markingFinalize').disabled=true;$('markingStatus').className='marking-status';$('markingStatus').textContent='正在生成教师确认后的批改反馈 PDF…';
+  try{const response=await fetch('/api/marking/finalize',{method:'POST',headers:{'Content-Type':'application/json','X-PhysicsBank-Action':'1'},body:JSON.stringify({jobId:state.markingDraft.jobId,items})});const data=await response.json();if(!data.ok)throw new Error(data.error||'生成失败');$('markingResult').innerHTML=`<b>批改完成 · ${data.totalScore} / ${data.totalMaximum}</b><div class="result-links"><a href="${data.annotatedUrl}" target="_blank">打开含评分准则的原卷批改版 PDF</a></div>`;$('markingResult').classList.add('open');$('markingStatus').textContent='原卷、批改标记和评分准则已合并为同一份 PDF。'}catch(error){$('markingStatus').textContent=`生成失败：${error.message}`;$('markingStatus').className='marking-status error'}finally{$('markingFinalize').disabled=false}
+}
+async function revealMarking(path){try{await fetch('/api/history/open',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recordId:state.markingDraft.recordId,kind:'folder'})})}catch(error){$('markingStatus').textContent='无法打开访达：'+error.message}}
+async function deleteHistory(recordId,button){
+  if(button.dataset.confirming!=='true'){button.dataset.confirming='true';button.textContent='再点一次确认删除';setTimeout(()=>{if(button.isConnected){button.dataset.confirming='false';button.textContent='删除'}},5000);return}
+  button.disabled=true;
+  try{const response=await fetch('/api/history/delete',{method:'POST',headers:{'Content-Type':'application/json','X-PhysicsBank-Action':'1'},body:JSON.stringify({recordId})});const data=await response.json();if(!data.ok)throw new Error(data.error||'删除失败');await loadHistory();$('historyNotice').textContent='试卷已移至“最近删除”，需要时可恢复。'}catch(error){button.disabled=false;button.dataset.confirming='false';button.textContent='删除';$('historyNotice').textContent=`删除失败：${error.message}`}
+}
+async function restoreHistory(recordId){
+  try{const response=await fetch('/api/history/restore',{method:'POST',headers:{'Content-Type':'application/json','X-PhysicsBank-Action':'1'},body:JSON.stringify({recordId})});const data=await response.json();if(!data.ok)throw new Error(data.error||'恢复失败');await loadHistory();$('historyNotice').textContent='试卷已恢复到“我的试卷”。'}catch(error){$('historyNotice').textContent=`恢复失败：${error.message}`}
+}
+async function openHistory(recordId,kind){try{const response=await fetch('/api/history/open',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recordId,kind})});const data=await response.json();if(!data.ok)throw new Error(data.error||'打开失败')}catch(error){alert(`无法打开：${error.message}`)}}
+async function reuseHistory(recordId){
+  try{const response=await fetch('/api/history/reuse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({recordId})});const data=await response.json();if(!data.ok)throw new Error(data.error||'恢复失败');state.selected=data.selectedIds;state.reviewOrder=[];state.lockedIds=new Set();state.aiPlan=null;state.timeMode='auto';$('title').value=`${data.title} - 副本`;if(data.className)$('className').value=data.className;render();renderBasket();switchView('browse');openBasket(false)}catch(error){alert(`无法恢复选题篮：${error.message}`)}
+}
+
+function newestFirst(a,b){
+  const season={"Feb/Mar":1,"May/Jun":2,"Oct/Nov":3};
+  const number=value=>Number.parseInt(String(value??'').match(/\d+/)?.[0]??'0',10);
+  return number(b.year)-number(a.year)
+    ||(season[b.session]??0)-(season[a.session]??0)
+    ||number(a.paper)-number(b.paper)
+    ||number(a.question)-number(b.question)
+    ||String(a.id).localeCompare(String(b.id));
+}
+function scopedSubtopics(item,topic){if(!topic)return item.subtopics||[item.subtopic];const mapped=item.topicSubtopics?.[topic];if(Array.isArray(mapped))return mapped;const topics=item.topicLabels||[item.topic];return topics.length===1&&topics[0]===topic?(item.subtopics||[item.subtopic]):[]}
+function currentFiltered(){
+  const query=$('search').value.trim().toLowerCase();const topic=$('topic').value;const subtopic=$('subtopic').value;const reviewRank=new Map(state.reviewOrder.map((id,index)=>[id,index]));
+  return state.bank.filter(x=>(!$('excludeUsed').checked||!state.usedIds.has(x.id))&&(!topic||(x.topicLabels||[x.topic]).includes(topic))&&(!subtopic||scopedSubtopics(x,topic).includes(subtopic))&&(!$('difficulty').value||x.difficulty===$('difficulty').value)&&(!$('paperType').value||x.paperType===$('paperType').value)&&(!$('year').value||String(x.year)===$('year').value)&&(!$('session').value||x.session===$('session').value)&&(!query||`${x.id} ${(x.topicLabels||[x.topic]).join(' ')} ${(x.subtopics||[x.subtopic]).join(' ')} ${x.snippet} ${x.sourceRef}`.toLowerCase().includes(query))).sort((a,b)=>(reviewRank.get(a.id)??Infinity)-(reviewRank.get(b.id)??Infinity)||newestFirst(a,b));
+}
+function pointScoringPanel(q){return `<details class="meta"><summary>按得分点计分 · <span id="pointTotal-${esc(q.id)}">0 / ${q.marks}</span></summary><p class="small">勾选学生已经做到的得分点。计算题：公式1分、过程1分、结果1分。</p>${(q.scoringParts||[]).map(part=>`<div class="small"><b>${esc(part.displayLabel||`Part ${part.part}`)} · ${part.marks}分</b></div>${part.points.map(point=>`<label style="display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13px"><input type="checkbox" data-scoring-question="${esc(q.id)}" value="${esc(point.id)}" onchange="updatePointScore('${esc(q.id)}')"><span>${esc(point.category)} · ${esc(point.point)} [1]</span></label>`).join('')}${part.scorable?'':`<p class="small">原题条件不足或矛盾，本小题不计分。</p>`}`).join('')}</details>`}
+async function updatePointScore(id){const points=[...document.querySelectorAll('input[data-scoring-question]')].filter(input=>input.dataset.scoringQuestion===id&&input.checked).map(input=>input.value);try{const response=await fetch('/api/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,awardedPointIds:points})});const data=await response.json();if(!data.ok)throw new Error(data.error);document.getElementById('pointTotal-'+id).textContent=`${data.score} / ${data.maximum}`}catch(error){document.getElementById('pointTotal-'+id).textContent=error.message}}
+function render(){
+  state.filtered=currentFiltered();const shown=state.filtered.slice(0,state.limit);const selectedSet=new Set(state.selected);
+  renderSelectionSummary();
+  $('loadMore').style.display=state.limit<state.filtered.length?'block':'none';
+  $('grid').innerHTML=shown.length?shown.map(x=>{
+    const isSelected=selectedSet.has(x.id);const marks=x.marks?`<span class="badge">${x.marks} marks</span>`:'';
+    const subtopics=x.subtopics||[x.subtopic];const subtopicText=subtopics.slice(0,4).join(' · ')+(subtopics.length>4?` · 另${subtopics.length-4}项`:'');
+    const answerUrl=x.answerImage?x.answerImage+'?v='+encodeURIComponent(x.answerImageVersion||x.scoringVersion||'current'):'';
+    return `<article class="card ${isSelected?'selected':''}" id="card-${esc(x.id)}"><div class="meta"><div class="topline"><span class="selected-label">已选</span><span class="qid">${esc(x.reviewId)} · ${esc(x.snippetTitle||x.title||'OPBP')}</span><span class="badge ${esc(x.difficulty)}" title="${esc(x.difficultyStatus||'')}：${esc(x.difficultyReason||'')}">${esc(x.difficulty)}</span>${marks}</div><div class="topic">${esc(x.topic)}</div><div class="subtopic">${esc(subtopicText)}</div><div class="small">${esc(x.paperType)} · ${esc(x.sourceRef)}</div></div><div class="image-wrap"><img loading="lazy" src="${x.questionDisplayImage||x.questionImage}" alt="${esc(x.id)}题目" onclick="showViewer('${x.questionDisplayImage||x.questionPreviewImage||x.questionImage}','${esc(x.id)}_question.png','${esc(x.sourceRef)} · 题目')"></div><div class="actions"><button class="add ${isSelected?'remove':''}" title="${isSelected?'点击移除':'加入作业'}" aria-pressed="${isSelected}" onclick="toggleSelection('${esc(x.id)}')">${isSelected?'已加入':'加入作业'}</button><button onclick="toggleAnswer(this,'${answerUrl}')">${x.answerImage?'查看答案':'暂无答案'}</button><button onclick="window.open('/source?path=${encodeURIComponent(x.sourcePdf)}&v=${encodeURIComponent(x.sourcePdfVersion||'')}','_blank')">打开原题</button></div><div class="answer">${x.answerImage?`<div class="image-wrap"><img loading="lazy" data-src="${answerUrl}" alt="${esc(x.id)}答案" onclick="showViewer('${answerUrl}','${esc(x.id)}_answer.webp','${esc(x.sourceRef)} · 教师参考答案')"></div>${pointScoringPanel(x)}`:`<div class="meta">暂无参考答案。这道题尚未完成答案整理；原题作答区的选项与输入提示不能当作答案。</div>`}</div></article>`
+  }).join(''):`<div class="empty">没有符合条件的题目，请调整筛选条件。</div>`;
+}
+function showMore(){state.limit+=60;render()}
+function toggleAnswer(button,url){const panel=button.closest('.card').querySelector('.answer');const image=panel.querySelector('img');if(image&&!image.src)image.src=url;panel.classList.toggle('open');button.textContent=panel.classList.contains('open')?(url?'收起答案':'收起提示'):(url?'查看答案':'暂无答案')}
+function renderSelectionSummary(){const shown=Math.min(state.filtered.length,state.limit);$('summary').textContent=`找到 ${state.filtered.length.toLocaleString()} 题 · 已选 ${state.selected.length} 题${state.reviewOrder.length?' · AI 原选题已列在前面':''} · 当前显示 ${shown} 题`}
+function updateSelectionCards(ids){
+  const selected=new Set(state.selected);
+  for(const id of ids){const card=document.getElementById('card-'+id);if(!card)continue;const active=selected.has(id);card.classList.toggle('selected',active);const button=card.querySelector('.actions .add');button.classList.toggle('remove',active);button.textContent=active?'已加入':'加入作业';button.title=active?'点击移除':'加入作业';button.setAttribute('aria-pressed',String(active))}
+  renderSelectionSummary();
+}
+function toggleSelection(id){const index=state.selected.indexOf(id);if(index>=0){state.selected.splice(index,1);state.lockedIds.delete(id)}else state.selected.push(id);saveState();updateSelectionCards([id]);renderBasket()}
+let clearBasketTimer=null;
+function resetClearConfirmation(){const button=$('clearBtn');if(!button)return;button.dataset.armed='false';button.textContent='清空';if(clearBasketTimer){clearTimeout(clearBasketTimer);clearBasketTimer=null}}
+function clearBasket(){if(!state.selected.length)return;const button=$('clearBtn');if(button.dataset.armed==='true'){const previous=state.selected.slice();resetClearConfirmation();state.selected=[];state.lockedIds=new Set();state.timeMode='auto';ExportFeedback.hide();$('status').classList.remove('open');saveState();updateSelectionCards(previous);renderBasket();return}button.dataset.armed='true';button.textContent='再次点击确认清空';if(clearBasketTimer)clearTimeout(clearBasketTimer);clearBasketTimer=setTimeout(resetClearConfirmation,4000)}
+function moveItem(id,direction){const index=state.selected.indexOf(id);const next=index+direction;if(index<0||next<0||next>=state.selected.length)return;[state.selected[index],state.selected[next]]=[state.selected[next],state.selected[index]];saveState();renderBasket()}
+function removeItem(id){state.selected=state.selected.filter(value=>value!==id);state.lockedIds.delete(id);saveState();updateSelectionCards([id]);renderBasket()}
+
+function updateTimeHint(){
+  $('timeEstimateHint').textContent=!state.selected.length?'选题后自动估算':state.timeMode==='auto'?'已按选题自动填写，仍可修改':`手动限时；建议 ${state.estimatedMinutes} 分钟`;
+  $('useEstimate').hidden=!state.selected.length||state.timeMode==='auto';
+}
+function useEstimatedTime(){state.timeMode='auto';$('timeLimit').value=state.selected.length?String(state.estimatedMinutes):'';updateTimeHint();saveState()}
+function renderBasket(){
+  const items=state.selected.map(id=>state.byId.get(id)).filter(Boolean);const total=items.reduce((sum,item)=>sum+(item.marks||0),0);const missing=items.filter(item=>(item.scoringParts||[]).some(part=>!part.scorable)).length;const estimates=Math.ceil(items.reduce((sum,item)=>sum+(Number(item.minutes)||0),0));const counts={Easy:0,Medium:0,Hard:0};items.forEach(item=>counts[item.difficulty]=(counts[item.difficulty]||0)+1);
+  const previewCurrent=Boolean(items.length&&state.previewFingerprint===paperPreviewFingerprint());$('basketCount').textContent=`${items.length}题`;$('collapsedCount').textContent=`${items.length}题`;$('mobileCount').textContent=items.length;$('totalMarks').textContent=total;$('estimatedTime').textContent=estimates;$('difficultyMix').textContent=`Easy ${counts.Easy||0} · Medium ${counts.Medium||0} · Hard ${counts.Hard||0}${missing?` · ${missing}题含不计分的原题异常小题`:''}`;$('previewBtn').disabled=!items.length;$('exportBtn').disabled=!previewCurrent;$('exportBtn').textContent=previewCurrent?'导出 PDF':'请先预览整份试卷';$('clearBtn').disabled=!items.length;if(!items.length)resetClearConfirmation();
+  state.estimatedMinutes=estimates;if(state.timeMode==='auto')$('timeLimit').value=items.length?String(estimates):'';updateTimeHint();saveState();
+  $('basketList').innerHTML=items.length?items.map((x,index)=>`<li class="basket-item" draggable="true" data-id="${esc(x.id)}"><div class="drag" title="拖动排序">⋮⋮</div><div class="basket-main"><b>${index+1}. ${esc(x.sourceRef)} · ${esc((x.subtopics||[x.subtopic]).slice(0,2).join(' + '))}</b><span>${esc(x.difficulty)} · ${esc(x.paperType)}${x.marks?` · ${x.marks} marks`:''}${state.lockedIds.has(x.id)?' · 换卷时保留':''}</span></div><div class="item-tools"><button class="keep ${state.lockedIds.has(x.id)?'active':''}" title="${state.lockedIds.has(x.id)?'取消保留':'换一套时保留这道题'}" onclick="toggleAiLock('${esc(x.id)}')">${state.lockedIds.has(x.id)?'已保留':'保留'}</button><button title="上移" onclick="moveItem('${esc(x.id)}',-1)">↑</button><button title="下移" onclick="moveItem('${esc(x.id)}',1)">↓</button><button title="移除" onclick="removeItem('${esc(x.id)}')">×</button></div></li>`).join(''):`<li class="basket-empty">从左侧题目中点击"加入作业"<br>刷新页面后选题仍会保留</li>`;
+  bindDrag();
+}
+function bindDrag(){let dragged='';document.querySelectorAll('.basket-item').forEach(item=>{item.addEventListener('dragstart',()=>{dragged=item.dataset.id;item.classList.add('dragging')});item.addEventListener('dragend',()=>item.classList.remove('dragging'));item.addEventListener('dragover',event=>event.preventDefault());item.addEventListener('drop',event=>{event.preventDefault();const target=item.dataset.id;if(!dragged||dragged===target)return;const from=state.selected.indexOf(dragged),to=state.selected.indexOf(target);state.selected.splice(from,1);state.selected.splice(to,0,dragged);saveState();renderBasket()})})}
+function setDesktopBasketCollapsed(collapsed){$('basket').classList.toggle('collapsed',collapsed);$('appLayout').classList.toggle('basket-collapsed',collapsed)}
+function openBasket(force=true){if(window.innerWidth<=1100){$('basket').classList.add('open')}else if(force){setDesktopBasketCollapsed(false)}}
+function toggleBasket(){if(window.innerWidth<=1100){$('basket').classList.remove('open');return}setDesktopBasketCollapsed(!$('basket').classList.contains('collapsed'))}
+function closeBasket(){if(window.innerWidth<=1100)$('basket').classList.remove('open');else setDesktopBasketCollapsed(true)}
+
+function setStatus(message,error=false){const box=$('status');box.textContent=message;box.className='status open'+(error?' error':'')}
+function homeworkPayload(){return {selectedIds:state.selected,title:$('title').value,className:$('className').value,studentName:$('studentName').value,dueDate:$('dueDate').value,timeLimit:$('timeLimit').value,timeMode:state.timeMode,showSource:$('showSource').checked,aiPrompt:$('aiPrompt').value,aiPlan:state.aiPlan}}
+function paperPreviewFingerprint(){return JSON.stringify(homeworkPayload())}
+function clearPreviewPdf(){if(state.previewUrl)URL.revokeObjectURL(state.previewUrl);state.previewUrl='';state.previewFingerprint='';$('paperPreviewFrame').removeAttribute('src')}
+function invalidatePaperPreview(){clearPreviewPdf();$('exportBtn').disabled=true;$('exportBtn').textContent=state.selected.length?'请先预览整份试卷':'请先选择题目'}
+async function exportHomework(){
+  const payload=homeworkPayload();if(state.previewFingerprint!==paperPreviewFingerprint()){setStatus('请先预览当前整份试卷，确认后再导出。',true);return}
+  ExportFeedback.hide();$('exportBtn').disabled=true;ExportFeedback.pending();setStatus('正在逐题检查题目和参考答案，并生成两份PDF…');
+  try{
+    const response=await fetch('/api/export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!data.ok)throw new Error(data.error||'导出失败');
+    $('status').classList.remove('open');ExportFeedback.success(data);
+  }catch(error){ExportFeedback.failed(error.message);setStatus(`导出失败：${error.message}`,true)}finally{const ready=state.previewFingerprint===paperPreviewFingerprint();$('exportBtn').disabled=!ready;$('exportBtn').textContent=ready?'导出 PDF':'请先预览整份试卷'}
+}
+async function revealOutput(runId){try{await fetch('/api/reveal',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId})})}catch(error){setStatus('无法打开访达：'+error.message,true)}}
+
+function showViewer(url,name,title){state.viewerUrl=url;state.viewerName=name;$('viewerImage').src=url;$('viewerTitle').textContent=title;$('viewerStatus').textContent='';$('viewer').classList.add('open');document.body.classList.add('modal-open');$('viewer').setAttribute('aria-hidden','false')}
+function closeViewer(){$('viewer').classList.remove('open');document.body.classList.remove('modal-open');$('viewer').setAttribute('aria-hidden','true');$('viewerImage').src=''}
+async function openPaperPreview(){const items=state.selected.map(id=>state.byId.get(id)).filter(Boolean);if(!items.length)return;const fingerprint=paperPreviewFingerprint();$('paperPreview').classList.add('open');$('paperPreview').setAttribute('aria-hidden','false');document.body.classList.add('modal-open');$('paperPreviewMeta').textContent=`${items.length}题 · 完整学生卷 PDF`;
+  if(state.previewUrl&&state.previewFingerprint===fingerprint){$('paperPreviewLoading').hidden=true;return}
+  $('paperPreviewLoading').hidden=false;$('paperPreviewLoading').textContent='正在生成完整学生卷 PDF…';$('previewBtn').disabled=true;invalidatePaperPreview();
+  try{const response=await fetch('/api/preview',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(homeworkPayload())});if(!response.ok){let detail='预览失败';try{detail=(await response.json()).error||detail}catch(_){}throw new Error(detail)}const blob=await response.blob();if(!blob.size)throw new Error('生成的 PDF 为空');state.previewUrl=URL.createObjectURL(blob);state.previewFingerprint=fingerprint;$('paperPreviewFrame').src=state.previewUrl;$('paperPreviewLoading').hidden=true;$('status').classList.remove('open');renderBasket()}catch(error){$('paperPreviewLoading').hidden=false;$('paperPreviewLoading').textContent=`预览失败：${error.message}`;setStatus(`预览失败：${error.message}`,true);invalidatePaperPreview()}finally{$('previewBtn').disabled=!state.selected.length}}
+function closePaperPreview(){$('paperPreview').classList.remove('open');$('paperPreview').setAttribute('aria-hidden','true');document.body.classList.remove('modal-open')}
+async function viewerBlob(){const response=await fetch(state.viewerUrl);if(!response.ok)throw new Error('图片读取失败');return response.blob()}
+async function blobAsPng(blob){if(blob.type==='image/png')return blob;const source=URL.createObjectURL(blob);try{const image=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=source});const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;canvas.getContext('2d').drawImage(image,0,0);return await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('PNG转换失败')),'image/png'))}finally{URL.revokeObjectURL(source)}}
+window.physicsBankCopyResult=succeeded=>{$('viewerStatus').textContent=succeeded?'已复制图片，可直接粘贴':'复制失败，请使用“下载图片”'};
+async function copyViewerImage(){try{if(window.webkit?.messageHandlers?.copyImage){$('viewerStatus').textContent='正在复制…';window.webkit.messageHandlers.copyImage.postMessage(state.viewerUrl);return}const blob=await blobAsPng(await viewerBlob());await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);window.physicsBankCopyResult(true)}catch(error){window.physicsBankCopyResult(false)}}
+async function downloadViewerImage(){try{const blob=await viewerBlob();const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=state.viewerName;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('viewerStatus').textContent='已开始下载'}catch(error){$('viewerStatus').textContent='下载失败：'+error.message}}
+function openViewerImage(){window.open(state.viewerUrl,'_blank')}
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeViewer();closePaperPreview();closeBasket()}});$('viewer').addEventListener('click',event=>{if(event.target===$('viewer'))closeViewer()});
+init();
+</script>
+</body>
+</html>
