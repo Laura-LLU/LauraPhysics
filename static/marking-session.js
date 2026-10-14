@@ -280,7 +280,10 @@ function mergeChoicePolicyUpdate(cached, fresh) {
     item.comment=previous.comment;item.teacherApproved=previous.teacherApproved;
     item.markPoints.forEach((point,index)=>{
       const edit=previous.markPoints?.find(row=>row.id===point.id);
-      if(edit&&!point.choiceEvidenceRejected)item.markPoints[index]={...point,...edit};
+      const prior=point.policyPrevious;
+      const corrected=prior&&edit&&edit.awarded===prior.awarded&&edit.reason===prior.reason&&
+        (edit.evidence===prior.evidence||(item.correctAnswer&&edit.evidence===(prior.studentAnswer||'')));
+      if(edit&&!point.choiceEvidenceRejected&&!corrected)item.markPoints[index]={...point,...edit};
     });
     item.score=item.markPoints.reduce((sum,p)=>sum+(p.awarded===true?p.marks:0),0);
     item.status=item.markPoints.some(p=>p.awarded===null)?'review':'draft';

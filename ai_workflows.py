@@ -482,6 +482,15 @@ def answer_crop_uri(page, question):
 
 
 OPTION_LETTERS = 'ABCDEFGHIJ'
+CHOICE_SEQUENCE = r'[A-J](?:(?:\s*[,，/;+、&]\s*|\s+(?:AND\s+)?|\s*[和及与]\s*|(?=[A-J]))[A-J])*'
+
+
+def explicit_choice_sequence(value):
+    """Accept an entire answer field, including AB and A, B; not narrative text."""
+    text = str(value or '').strip().upper()
+    if not re.fullmatch(CHOICE_SEQUENCE, text):
+        return None
+    return sorted(set(re.findall(r'[A-J]', re.sub(r'\bAND\b', '', text))), key=OPTION_LETTERS.index)
 
 
 def _plain_choice(value):
@@ -560,13 +569,12 @@ def student_choice(value, question):
     if not raw:
         return None
     compact = raw.upper().strip()
-    if re.fullmatch(r'[A-J](?:\s*[,/;+、]\s*[A-J])*', compact):
-        letters = re.findall(r'[A-J]', compact)
-        return sorted(set(letters), key=OPTION_LETTERS.index)
-    explicit = re.search(r'(?:选择(?:了)?(?:选项)?|勾选(?:了)?(?:选项)?|答案|SELECTED|CHOSE|ANSWER)\s*[:：-]?\s*[“”‘’\'\"]?([A-J](?:\s*[,/;+、]\s*[A-J])*)', compact, re.I)
+    letters = explicit_choice_sequence(compact)
+    if letters:
+        return letters
+    explicit = re.search(r'(?:选择(?:了)?(?:选项)?|勾选(?:了)?(?:选项)?|答案|SELECTED|CHOSE|ANSWER)\s*[:：-]?\s*[“”‘’\'\"]?(' + CHOICE_SEQUENCE + r')(?![A-Z])', compact, re.I)
     if explicit:
-        letters = re.findall(r'[A-J]', explicit.group(1).upper())
-        return sorted(set(letters), key=OPTION_LETTERS.index)
+        return explicit_choice_sequence(explicit.group(1))
     leading = re.match(r'^\s*([A-J])(?:\s|$|[—–\-.:)])', compact)
     if leading:
         return [leading.group(1)]
@@ -580,15 +588,17 @@ def direct_choice_letters(evidence):
     """Extract letters that the observation explicitly describes as written/selected."""
     text = re.sub(r'\s+', ' ', str(evidence or '')).upper()
     patterns = [
-        r'(?:手写|写下|写了|填写)\s*(?:了|为)?\s*(?:(?:一个)?(?:大写|小写)?字母\s*)?[“”‘’\'\"]?([A-J])\b',
-        r'画了(?:一个)?(?:大写)?字母\s*[“”‘’\'\"]?([A-J])\b',
-        r'(?:圈出|圈选|勾选)[^。；;\n]{0,20}?[“”‘’\'\"]?([A-J])\b',
+        r'(?:手写|写下|写了|填写)\s*(?:了|为)?\s*(?:(?:一个)?(?:大写|小写)?字母\s*)?[“”‘’\'\"]?(' + CHOICE_SEQUENCE + r')(?![A-Z])',
+        r'画了(?:一个)?(?:大写)?字母\s*[“”‘’\'\"]?(' + CHOICE_SEQUENCE + r')(?![A-Z])',
+        r'(?:圈出|圈选|勾选)[^。；;\n]{0,20}?[“”‘’\'\"]?(' + CHOICE_SEQUENCE + r')(?![A-Z])',
         # Keep the answer letter immediately attached to the action phrase.
         # A loose "wrote ... F" pattern mistakes formula symbols such as
         # "mΔv = ∫F dt" for option F.
-        r'(?:WROTE|WRITTEN|HANDWROTE|CIRCLED|TICKED|SELECTED|CHOSE)\s+(?:THE\s+)?(?:(?:ANSWER|OPTION|LETTER)\s*)?[:：-]?\s*[\'\"]?([A-J])(?:[\'\"]|\b)',
+        r'(?:WROTE|WRITTEN|HANDWRITTEN|HANDWROTE|CIRCLED|TICKED|SELECTED|CHOSE)\s+(?:THE\s+)?(?:(?:ANSWER|OPTIONS?|LETTERS?)\s*)?[:：-]?\s*[\'\"]?(' + CHOICE_SEQUENCE + r')(?![A-Z])',
+        r'(?:TICK|CHECKMARK|CHECK\s+MARK|CIRCLE)(?:\s*\([✓√✔]\))?\s+(?:BESIDE|NEXT\s+TO|BY)\s+(?:OPTION\s+)?([A-J])(?![A-Z])',
     ]
-    found = {letter for pattern in patterns for letter in re.findall(pattern, text, re.I)}
+    found = {letter for pattern in patterns for sequence in re.findall(pattern, text, re.I)
+             for letter in (explicit_choice_sequence(sequence) or [])}
     # Common Chinese observation form: "在选项C前画了大写字母'C'".
     for option, written in re.findall(r'选项\s*([A-J])\s*前[^。；;\n]{0,24}?字母\s*[“”‘’\'\"]?([A-J])\b', text, re.I):
         if option == written:
@@ -607,7 +617,7 @@ def strict_choice_selection(value, evidence, question):
     a response and therefore receive zero under the teacher's strict rule.
     """
     raw = str(evidence or '').strip()
-    if re.fullmatch(r'[A-J](?:\s*[,/;+、]\s*[A-J])*', raw.upper()):
+    if explicit_choice_sequence(raw):
         selected = student_choice(raw, question)
         if selected:
             return selected, True, ''
@@ -626,7 +636,7 @@ def concise_marking_note(value, limit=60):
     significant_figures = (re.search(r'(?:应|须|需要|要求)[^。；]{0,30}?([23])\s*位有效数字', note)
                            or re.search(r'([23])\s*位有效数字', note))
     if significant_figures:
-        return f'有效数字应保留{significant_figures.group(1)}位。'
+        return '有效数字应保留2位或3位。'
     first = next((part.strip() for part in re.split(r'(?<=[。！？!?])', note) if part.strip()), '')
     if not first:
         return ''
@@ -777,7 +787,10 @@ def normalize_grade(question, response, page_indices, page_count):
         elif reference:
             awarded = None
             reason = '模型结果不完整，请教师复核。'
-        if not reference and awarded is False and prompt_unit_numeric_answer_is_valid(question, rubric, evidence):
+        if not reference and awarded is False and (
+            prompt_unit_numeric_answer_is_valid(question, rubric, evidence)
+            or numeric_precision_rejection_is_invalid(rubric, evidence, reason)
+        ):
             awarded = True
             reason = ''
         # Evidence is mandatory for earned marks; an unreadable answer is never treated as blank.
@@ -872,6 +885,28 @@ def prompt_unit_numeric_answer_is_valid(question, rubric, evidence):
     return numeric_result_is_equivalent(rubric.get('point'), evidence)
 
 
+def numeric_precision_rejection_is_invalid(rubric, evidence, reason):
+    """Fix only a precision-only rejection of an equivalent 2/3-s.f. result."""
+    if rubric.get('category') != 'A1' or '结果正确' not in str(rubric.get('point') or ''):
+        return False
+    note = str(reason or '')
+    if not re.search(r'有效(?:数字|数位)|significant\s+(?:figures|digits)', note, re.I):
+        return False
+    if re.search(r'单位|方向|符号|正负|数值|计算|unit|direction|sign\b|value|calculation', note, re.I):
+        return False
+    def unit_suffix(text):
+        text = str(text or '').replace('−', '-')
+        text = re.sub(r'(?<=[A-Za-z])\s*\^\s*([+-]?\d+)',
+                      lambda m: m.group(1).translate(str.maketrans('0123456789-+', '⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺')), text)
+        text = re.sub(r'10([⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+)',
+                      lambda m: '10^' + m.group(1).translate(str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺', '0123456789-+')), text)
+        matches = list(re.finditer(r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:(?:\s*[×x]\s*10\s*\^?\s*[-+]?\d+)|(?:[eE][-+]?\d+))?', text))
+        return re.sub(r'\s+', '', text[matches[-1].end():]).strip('。.,; ') if matches else ''
+    if unit_suffix(rubric.get('point')) != unit_suffix(evidence):
+        return False
+    return numeric_result_is_equivalent(rubric.get('point'), evidence)
+
+
 def summary_pdf(draft, destination, approved=False):
     from reportlab.pdfgen import canvas
     from reportlab.lib.pagesizes import A4
@@ -928,13 +963,13 @@ def _direct_choice_box(page, item, question, region):
     if not item.get('markPoints'):
         return None
     point = item['markPoints'][0]
-    selected = student_choice(point.get('studentAnswer') or point.get('evidence'), question)
-    if not selected or len(selected) != 1:
+    selected, explicit, _ = strict_choice_selection(point.get('studentAnswer'), point.get('evidence'), question)
+    if not explicit:
         return None
     top, bottom = region
     candidates = []
     for word in page.get_text('words'):
-        if str(word[4] or '').strip().upper() != selected[0]:
+        if explicit_choice_sequence(word[4]) != selected:
             continue
         rect = page.rect.__class__(word[:4])
         if top <= rect.y0 <= bottom and rect.x0 < page.rect.width * .28:
@@ -1055,6 +1090,23 @@ def point_needs_position(item, point):
 
 def recheck_choice_draft(folder, draft):
     """Resolve locations first, then require both an explicit answer and its location."""
+    for item in draft.get('items', []):
+        if item.get('teacherApproved'):
+            continue
+        question = core.QUESTION_BY_ID.get(item.get('id'))
+        for point in item.get('markPoints', []):
+            previous = {key: point.get(key) for key in ('studentAnswer', 'awarded', 'evidence', 'reason')}
+            if question and question.get('type') == 'MCQ' and not point.get('choiceEvidenceRejected'):
+                selected, explicit, _ = strict_choice_selection(point.get('studentAnswer'), point.get('evidence'), question)
+                if explicit:
+                    point['studentAnswer'] = ', '.join(selected)
+                    if (point.get('position') or {}).get('source', '').startswith('unanswered-'):
+                        point['position'] = None
+                    if previous['studentAnswer'] != point['studentAnswer']:
+                        point['policyPrevious'] = previous
+            elif point.get('awarded') is False and numeric_precision_rejection_is_invalid(point, point.get('evidence'), point.get('reason')):
+                point.update(awarded=True, reason='', policyPrevious=previous)
+        item['score'] = sum(p['marks'] for p in item.get('markPoints', []) if p.get('awarded') is True)
     resolve_annotation_positions(folder, draft)
     for item in draft.get('items', []):
         question = core.QUESTION_BY_ID.get(item.get('id'))
@@ -1067,7 +1119,7 @@ def recheck_choice_draft(folder, draft):
         for item in draft.get('items', [])
     )
     resolve_annotation_positions(folder, draft)
-    draft['choicePolicyVersion'] = 'explicit-location-or-zero-v1'
+    draft['choicePolicyVersion'] = 'explicit-multiple-choice-and-precision-v2'
     return draft
 
 
