@@ -47,6 +47,15 @@ LEGACY_SETTINGS = Path.home() / "Library" / "Application Support" / "PhysicsBank
 LEGACY_SERVICE = "com.luoruohan.physics-bank.ai"
 LEGACY_ACCOUNT = "physics-bank"
 
+# Public defaults contain no credential; each deployment supplies its own key.
+DEFAULT_AI_SETTINGS = {
+    "providerName": "阿里云百炼",
+    "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "model": "qwen3.8-flash",
+    "markingModel": "qwen3.7-plus",
+    "credentialProfile": "qwen",
+}
+
 
 def load_json(path: Path, default):
     try:
@@ -130,6 +139,8 @@ def credential_profile(provider_name: str, base_url: str) -> str:
 
 
 def read_keychain(service: str, account: str) -> str:
+    if os.environ.get('LAURAPHYSICS_DISABLE_KEYCHAIN') == '1':
+        return ''
     if platform.system() != 'Darwin':
         return ''
     try:
@@ -205,7 +216,8 @@ def raw_settings() -> tuple[dict, bool]:
     inherited = False
     if not stored and os.environ.get('LAURAPHYSICS_DISABLE_LEGACY_CONFIG') != '1' and LEGACY_SETTINGS.exists():
         legacy = load_json(LEGACY_SETTINGS, {})
-        if legacy.get("baseUrl") and legacy.get("model"):
+        if (legacy.get("baseUrl") and legacy.get("model")
+                and credential_profile(str(legacy.get("providerName", "")), str(legacy["baseUrl"])) == "qwen"):
             stored = {
                 "providerName": legacy.get("providerName", "OpenAI-compatible"),
                 "baseUrl": legacy.get("baseUrl", ""),
@@ -214,7 +226,7 @@ def raw_settings() -> tuple[dict, bool]:
                 "markingModel": legacy.get("markingModel", ""),
             }
             inherited = True
-    return stored, inherited
+    return stored or dict(DEFAULT_AI_SETTINGS), inherited
 
 
 def public_settings() -> dict:

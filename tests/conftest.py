@@ -23,6 +23,7 @@ QA_ARTIFACTS.mkdir(parents=True, exist_ok=True)
 os.environ.setdefault("LAURAPHYSICS_OPEN_DATA", str(QA_STATE / "data"))
 os.environ.setdefault("LAURAPHYSICS_OPEN_OUTPUT", str(QA_STATE / "generated"))
 os.environ.setdefault("LAURAPHYSICS_DISABLE_LEGACY_CONFIG", "1")
+os.environ.setdefault("LAURAPHYSICS_DISABLE_KEYCHAIN", "1")
 
 
 @dataclass(frozen=True)

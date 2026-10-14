@@ -28,7 +28,8 @@ def main():
     env = os.environ.copy()
     env.update(LPQA_STATE_ROOT=str(output/'state'), LPQA_ARTIFACTS=str(output/'evidence'),
                LAURAPHYSICS_OPEN_DATA=str(output/'state/data'), LAURAPHYSICS_OPEN_OUTPUT=str(output/'state/generated'),
-               LAURAPHYSICS_DISABLE_LEGACY_CONFIG='1', COVERAGE_FILE=str(output/'.coverage'))
+               LAURAPHYSICS_DISABLE_LEGACY_CONFIG='1', LAURAPHYSICS_DISABLE_KEYCHAIN='1',
+               COVERAGE_FILE=str(output/'.coverage'))
     # Never allow a test rerun to inherit a user's real API credential.
     env.pop('LAURAPHYSICS_OPEN_API_KEY', None)
     if args.install:
