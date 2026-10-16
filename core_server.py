@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local backend for the copyright-safe LauraPhysics competition app."""
+"""Local backend for the copyright-safe OPBP Bank app."""
 
 from __future__ import annotations
 
@@ -73,21 +73,22 @@ def save_json(path: Path, value) -> None:
     temporary.replace(path)
 
 
-def normalize_opbp_title(value, fallback="OPBP 物理题库 · 模拟练习"):
+def normalize_opbp_title(value, fallback="OPBP Bank · 模拟练习"):
     """Migrate generated legacy names without changing custom paper names."""
     title = str(value or "").strip()
     if not title:
         return fallback
+    title = re.sub(r"^OPBP 物理题库(?=\s*(?:[·:—-]|$))", "OPBP Bank", title)
     prefix = r"^(?:(?:CIE\s+)?(?:(?:AS\s*(?:&|and)\s*)?A\s*Level\s+))?9702\s*(?:Physics|物理)\s*"
     if re.match(prefix, title, re.I):
         rest = re.sub(prefix, "", title, count=1, flags=re.I).lstrip("·:—- ").strip()
         if not rest or rest.lower() == "mock examination":
-            return "OPBP 物理题库 · 模拟练习"
+            return "OPBP Bank · 模拟练习"
         if rest.lower() == "homework":
-            return "OPBP 物理题库 · 作业"
-        return "OPBP 物理题库 · " + rest
+            return "OPBP Bank · 作业"
+        return "OPBP Bank · " + rest
     if re.fullmatch(r"(?:Physics\s+)?(?:Mock Examination|Homework)", title, re.I):
-        return "OPBP 物理题库 · 作业" if "homework" in title.lower() else fallback
+        return "OPBP Bank · 作业" if "homework" in title.lower() else fallback
     return title
 
 
@@ -612,7 +613,7 @@ def model_mark(items: list[dict]) -> list[dict]:
 
 def safe_filename(value: str) -> str:
     cleaned = re.sub(r"[^A-Za-z0-9._-]+", "-", value.strip()).strip("-.")
-    return cleaned[:60] or "LauraPhysics-Practice"
+    return cleaned[:60] or "OPBP-Bank-Practice"
 
 
 def paragraph_text(value: str) -> str:
@@ -651,7 +652,7 @@ def build_pdfs(title: str, selected: list[dict], output_dir: Path) -> tuple[Path
         canvas.line(18 * mm, 14 * mm, 192 * mm, 14 * mm)
         canvas.setFont("STSong-Light", 8)
         canvas.setFillColor(colors.HexColor("#64748B"))
-        canvas.drawString(18 * mm, 9 * mm, "LauraPhysics original demonstration content")
+        canvas.drawString(18 * mm, 9 * mm, "OPBP Bank original demonstration content")
         canvas.drawRightString(192 * mm, 9 * mm, f"Page {document.page}")
         canvas.restoreState()
 
@@ -692,7 +693,7 @@ def build_pdfs(title: str, selected: list[dict], output_dir: Path) -> tuple[Path
 
 
 def create_export(payload: dict) -> dict:
-    title = str(payload.get("title", "LauraPhysics Original Practice"))[:100]
+    title = str(payload.get("title", "OPBP Bank Original Practice"))[:100]
     ids = [str(value) for value in payload.get("selectedIds", []) if str(value) in QUESTION_BY_ID]
     selected = [QUESTION_BY_ID[item_id] for item_id in ids]
     if not selected:
@@ -707,7 +708,7 @@ def create_export(payload: dict) -> dict:
         "selectedIds": ids,
         "totalMarks": sum(int(q["marks"]) for q in selected),
         "estimatedMinutes": sum(int(q["minutes"]) for q in selected),
-        "contentSource": "LauraPhysics Original Demo Bank",
+        "contentSource": "OPBP Bank Original Demo Bank",
         "copyrightBoundary": "No examination-board content included.",
     }
     save_json(output_dir / "manifest.json", manifest)
@@ -722,7 +723,7 @@ def create_export(payload: dict) -> dict:
 
 
 def finalize_marking(payload: dict) -> dict:
-    title = str(payload.get("title", "LauraPhysics Marking Review"))[:100]
+    title = str(payload.get("title", "OPBP Bank Marking Review"))[:100]
     results = payload.get("results", [])
     if not results:
         raise ValueError("没有可导出的批改结果。")
@@ -737,7 +738,7 @@ def finalize_marking(payload: dict) -> dict:
         "createdAt": datetime.now().isoformat(timespec="seconds"),
         "results": results,
         "teacherReviewed": True,
-        "contentSource": "LauraPhysics Original Demo Bank",
+        "contentSource": "OPBP Bank Original Demo Bank",
     }
     save_json(record_path, record)
     try:
@@ -778,7 +779,7 @@ def finalize_marking(payload: dict) -> dict:
 
 
 class Handler(SimpleHTTPRequestHandler):
-    server_version = "LauraPhysicsOpen/0.1"
+    server_version = "OPBPBank/0.7.43"
 
     def log_message(self, format: str, *args) -> None:
         if os.environ.get("LAURAPHYSICS_OPEN_VERBOSE"):
@@ -811,7 +812,7 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             return
         if parsed.path == "/api/health":
-            self.send_json({"ok": True, "name": "LauraPhysics Open Competition", "version": "0.1.1", "questions": len(QUESTIONS), "rightsSafe": True})
+            self.send_json({"ok": True, "name": "OPBP Bank", "version": "0.1.1", "questions": len(QUESTIONS), "rightsSafe": True})
             return
         if parsed.path == "/api/questions":
             self.send_json(QUESTION_DOCUMENT)
@@ -913,14 +914,14 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="LauraPhysics Open Competition local server")
+    parser = argparse.ArgumentParser(description="OPBP Bank local server")
     parser.add_argument("--port", type=int, default=8785)
     args = parser.parse_args()
     APP_DATA.mkdir(parents=True, exist_ok=True)
     GENERATED_ROOT.mkdir(parents=True, exist_ok=True)
     os.chdir(STATIC_ROOT)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"LauraPhysics Open Competition running at http://127.0.0.1:{args.port}", flush=True)
+    print(f"OPBP Bank running at http://127.0.0.1:{args.port}", flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

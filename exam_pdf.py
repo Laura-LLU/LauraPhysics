@@ -49,7 +49,7 @@ def draw_pdfs(payload,selected,folder,static):
     kind=paper_kind(selected); outputs=[];counts=[]
     for teacher in [False,True]:
         out=folder/(export_stem(payload,selected)+('_Answers.pdf' if teacher else '_Student.pdf'))
-        c=canvas.Canvas(str(out),pagesize=A4,pageCompression=1);c.setTitle(title+(' - Mark Scheme' if teacher else ''));c.setAuthor('LauraPhysics / OPBP');c.setKeywords('; '.join(f'{q["reviewId"]} | {q["author"]} | {q["license"]} | {q["sourceUrl"]}' for q in selected))
+        c=canvas.Canvas(str(out),pagesize=A4,pageCompression=1);c.setTitle(title+(' - Mark Scheme' if teacher else ''));c.setAuthor('OPBP Bank');c.setKeywords('; '.join(f'{q["reviewId"]} | {q["author"]} | {q["license"]} | {q["sourceUrl"]}' for q in selected))
         def text(x,y,s,size=11,bold=False,chinese=False):
             c.setFont('STSong-Light' if chinese else 'Helvetica-Bold' if bold else 'Helvetica',size);c.drawString(x,y,str(s))
         def mixed_title(x,y,value,size=12,max_width=RIGHT-LEFT):
@@ -84,7 +84,7 @@ def draw_pdfs(payload,selected,folder,static):
                 y-=22
             return y
         def footer():
-            c.setFillColorRGB(0,0,0);text(LEFT,33,'LauraPhysics | OPBP',8)
+            c.setFillColorRGB(0,0,0);text(LEFT,33,'OPBP Bank',8)
             c.setFont('Helvetica',8);c.drawCentredString(W/2,33,'OPBP / CIE-style mock / '+('MS' if teacher else 'QP'))
             c.drawRightString(RIGHT,33,'Turn over')
         def page():

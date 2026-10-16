@@ -18,8 +18,8 @@ private struct Course {
 
 private let localResources = Bundle.main.resourceURL!.path
 private let courses = [
-    Course(shortTitle: "AI 组卷与批改", windowTitle: "物理题库 · AI 助手", address: "http://127.0.0.1:8785", projectRoot: localResources, serverScript: localResources + "/server.py", port: "8785", expectedHealthText: "LauraPhysics Open Competition", logName: "LauraPhysicsOpen-AI.log"),
-    Course(shortTitle: "OPBP 组卷", windowTitle: "物理题库 · OPBP 组卷", address: "http://127.0.0.1:8787", projectRoot: localResources, serverScript: localResources + "/server.py", port: "8787", expectedHealthText: "LauraPhysics Open Competition", logName: "LauraPhysicsOpen-9702.log"),
+    Course(shortTitle: "AI 组卷与批改", windowTitle: "OPBP Bank · AI 组卷与评卷", address: "http://127.0.0.1:8785", projectRoot: localResources, serverScript: localResources + "/server.py", port: "8785", expectedHealthText: "OPBP Bank", logName: "LauraPhysicsOpen-AI.log"),
+    Course(shortTitle: "OPBP 组卷", windowTitle: "OPBP Bank · OPBP 组卷", address: "http://127.0.0.1:8787", projectRoot: localResources, serverScript: localResources + "/server.py", port: "8787", expectedHealthText: "OPBP Bank", logName: "LauraPhysicsOpen-9702.log"),
 ]
 
 final class FileDropOverlay: NSView {
@@ -237,12 +237,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     private func installMainMenu() {
         let menu = NSMenu()
         let appItem = NSMenuItem()
-        let appMenu = NSMenu(title: "物理题库")
+        let appMenu = NSMenu(title: "OPBP Bank")
         appMenu.addItem(withTitle: "OPBP 题库版权…", action: #selector(showCopyright(_:)), keyEquivalent: "")
         appMenu.addItem(withTitle: "联系作者…", action: #selector(showContact(_:)), keyEquivalent: "")
         appMenu.addItem(withTitle: "Laura-LLU 的 GitHub", action: #selector(openGitHub(_:)), keyEquivalent: "")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "退出物理题库", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "退出 OPBP Bank", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         appItem.submenu = appMenu
         menu.addItem(appItem)
 
@@ -530,7 +530,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
                 backing: .buffered,
                 defer: false
             )
-            childWindow.title = "物理题库文件"
+            childWindow.title = "OPBP Bank 文件"
             childWindow.contentView = childWebView
             childWindow.center()
             childWindow.makeKeyAndOrderFront(nil)

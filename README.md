@@ -1,21 +1,23 @@
-# LauraPhysics · 物理组卷与评卷工作台
+# OPBP Bank · AI 物理组卷与评卷工作台
 
-[![CI](https://github.com/Laura-LLU/LauraPhysics/actions/workflows/ci.yml/badge.svg)](https://github.com/Laura-LLU/LauraPhysics/actions/workflows/ci.yml)
+[![CI](https://github.com/Laura-LLU/OPBP-Bank/actions/workflows/ci.yml/badge.svg)](https://github.com/Laura-LLU/OPBP-Bank/actions/workflows/ci.yml)
 [![Code: AGPL-3.0](https://img.shields.io/badge/code-AGPL--3.0-blue.svg)](LICENSE)
 
-**v0.7.42** · 本地运行、教师复核、独立部署。面向物理教师，从 OPBP 原题组卷，上传作答，检查 AI 逐点评分证据，修改确认后导出原卷批注 PDF。
+**v0.7.43** · 本地运行、教师复核、独立部署。面向物理教师，从 OPBP 原题组卷，上传作答，检查 AI 逐点评分证据，修改确认后导出原卷批注 PDF。
 
 上海开源软件应用创新大赛参赛项目的公开源码。900 道可选题，人工与 AI 使用同一题池；不是 Cambridge 官方产品、官方真题或官方 Mark Scheme。
 
-当前代码以 `main` 和 [v0.7.42 Release](https://github.com/Laura-LLU/LauraPhysics/releases/tag/v0.7.42) 为准；题图仍从安装器锁定的 v0.7.41 资源包下载，资源版本与程序版本分开。
+当前代码以 `main` 和 [v0.7.43 Release](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.43) 为准；题图仍从安装器锁定的 v0.7.41 资源包下载，资源版本与程序版本分开。
+
+项目统一名称为 **OPBP Bank**；macOS 应用为 `OPBP Bank.app`，GitHub 仓库为 `Laura-LLU/OPBP-Bank`。既有本地数据目录、环境变量与钥匙串标识保留兼容，改名无需重配模型或迁移历史。
 
 ## 新 Mac 快速部署
 
 需要 Git、网络和 Python 3.10–3.14，**推荐 Python 3.12**。独立环境不修改系统 Python。
 
 ```bash
-git clone https://github.com/Laura-LLU/LauraPhysics.git
-cd LauraPhysics
+git clone https://github.com/Laura-LLU/OPBP-Bank.git
+cd OPBP-Bank
 export SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}"
 python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/run_web.py --check

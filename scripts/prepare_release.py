@@ -38,10 +38,10 @@ def prepare(output, include_macos_vendor=False):
     manifest = {'version':version, 'portable':not include_macos_vendor, 'files':checksums,
                 'formalCodeLicenseChosen':(ROOT/'LICENSE').is_file(), 'codeLicense':'AGPL-3.0-only' if (ROOT/'LICENSE').is_file() else None,
                 'published':False}
-    archive = output / f'LauraPhysics-v{version}-portable-source.zip'
+    archive = output / f'OPBP-Bank-v{version}-portable-source.zip'
     with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=3) as zipped:
-        for path in sorted(files): zipped.write(path, 'LauraPhysics/' + str(path.relative_to(ROOT)))
-        zipped.writestr('LauraPhysics/release-manifest.json', json.dumps(manifest, ensure_ascii=False, indent=2))
+        for path in sorted(files): zipped.write(path, 'OPBP-Bank/' + str(path.relative_to(ROOT)))
+        zipped.writestr('OPBP-Bank/release-manifest.json', json.dumps(manifest, ensure_ascii=False, indent=2))
     report = {'archive': archive.name, 'version':version, 'fileCount': len(files), 'bytes': archive.stat().st_size,
               'sha256':hashlib.sha256(archive.read_bytes()).hexdigest(), 'portable':not include_macos_vendor,
               'published': False, 'formalCodeLicenseChosen': (ROOT/'LICENSE').is_file(), 'credentialPatternCheck': 'passed',

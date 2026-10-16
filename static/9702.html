@@ -4,7 +4,7 @@
 <script src="/paper-labels.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OPBP 物理题库 · 本地组卷工具</title>
+<title>OPBP Bank · 本地组卷工具</title>
 <style>
 :root{
   --ink:#172231;--muted:#687385;--paper:#f5f2eb;--card:#fff;--line:#d8d4ca;
@@ -70,7 +70,7 @@ input:focus,select:focus,button:focus-visible{outline:3px solid rgba(41,112,189,
 <script src="/export-feedback.js" defer></script>
 </head>
 <body><link rel="stylesheet" href="/web-shell.css"><nav class="web-shell" aria-label="工作区切换"><b>工作区</b><a class="workspace-link" href="/">AI 组卷与批改</a><a class="workspace-link is-active" href="/opbp" aria-current="page">OPBP 组卷</a><a class="copyright" href="/copyright" target="_blank">OPBP · 版权说明</a></nav><script>if(window.webkit?.messageHandlers?.copyImage)document.querySelector(".web-shell").hidden=true;</script>
-<header class="hero"><div class="hero-line"><div><h1>物理题库</h1><div class="subtitle">OPBP 原题 · 按 9702 考纲分类 · 筛题与调整</div></div><div class="hero-actions"><a class="brand-link" href="https://github.com/Laura-LLU" target="_blank" rel="noopener noreferrer" aria-label="Laura-LLU 的 GitHub 主页"><span class="brand-mark">L</span>Laura-LLU</a><button class="contact-trigger" type="button" onclick="document.getElementById('contactDialog').showModal()" aria-haspopup="dialog" aria-controls="contactDialog">联系作者</button><div class="server-pill" id="serverPill">正在连接本地题库…</div></div></div><nav class="workspace-tabs" aria-label="主要功能"><button class="workspace-tab active" data-view="browse" onclick="switchView('browse')">组卷</button><button class="workspace-tab" data-view="history" onclick="switchView('history')">我的试卷</button></nav></header>
+<header class="hero"><div class="hero-line"><div><h1>OPBP Bank</h1><div class="subtitle">OPBP 原题 · 按 9702 考纲分类 · 筛题与调整</div></div><div class="hero-actions"><a class="brand-link" href="https://github.com/Laura-LLU" target="_blank" rel="noopener noreferrer" aria-label="Laura-LLU 的 GitHub 主页"><span class="brand-mark">L</span>Laura-LLU</a><button class="contact-trigger" type="button" onclick="document.getElementById('contactDialog').showModal()" aria-haspopup="dialog" aria-controls="contactDialog">联系作者</button><div class="server-pill" id="serverPill">正在连接本地题库…</div></div></div><nav class="workspace-tabs" aria-label="主要功能"><button class="workspace-tab active" data-view="browse" onclick="switchView('browse')">组卷</button><button class="workspace-tab" data-view="history" onclick="switchView('history')">我的试卷</button></nav></header>
 <section class="view active" id="browseView">
 <section class="filters">
   <input aria-label="搜索题目" id="search" placeholder="搜索题号、Topic或题目内容">
@@ -79,7 +79,7 @@ input:focus,select:focus,button:focus-visible{outline:3px solid rgba(41,112,189,
   <select aria-label="难度" id="difficulty" title="按简单、中等、困难筛选"><option value="">全部难度</option><option value="Easy">Easy · 简单</option><option value="Medium">Medium · 中等</option><option value="Hard">Hard · 困难</option></select>
   <select aria-label="题型" id="paperType"><option value="">全部题型</option></select>
 </section>
-<div class="notice" id="notice"><b>没有连接到 9702 本地题库。</b><br>请退出并重新打开“物理题库”桌面应用。</div>
+<div class="notice" id="notice"><b>没有连接到 9702 本地题库。</b><br>请退出并重新打开“OPBP Bank”桌面应用。</div>
 <div class="app" id="appLayout">
   <main>
     <div class="summary-row"><div id="summary">正在载入题库…</div><div class="summary-tools"><label class="exclude-used"><input id="excludeUsed" type="checkbox">排除历史题 <span id="usedCount"></span></label><button class="load-more" id="loadMore" onclick="showMore()">显示更多</button></div></div>
@@ -96,7 +96,7 @@ input:focus,select:focus,button:focus-visible{outline:3px solid rgba(41,112,189,
     <div class="basket-body">
       <ol class="basket-list" id="basketList"></ol>
       <div class="form">
-        <div class="field full"><label for="title">作业名称</label><input id="title" value="OPBP 物理题库 · 模拟练习"></div>
+        <div class="field full"><label for="title">作业名称</label><input id="title" value="OPBP Bank · 模拟练习"></div>
         <div class="field"><label for="className">班级</label><input id="className" placeholder="可不填"></div>
         <div class="field"><label for="studentName">学生</label><input id="studentName" placeholder="可不填"></div>
         <div class="field"><label for="dueDate">日期</label><input id="dueDate" type="date"></div>

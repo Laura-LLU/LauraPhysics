@@ -71,7 +71,7 @@ def test_offline_ensure_assets_does_not_need_network(tmp_path,monkeypatch):
 
 def test_short_response_resumes_and_verifies_full_archive(tmp_path,monkeypatch):
  data=b'public resource bytes';destination=tmp_path/'download.zip';requests=[]
- manifest={'url':'https://github.com/Laura-LLU/LauraPhysics/releases/download/test/assets.zip',
+ manifest={'url':'https://github.com/Laura-LLU/OPBP-Bank/releases/download/test/assets.zip',
   'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
  def open_response(request,timeout):
   requests.append(request)
@@ -85,7 +85,7 @@ def test_short_response_resumes_and_verifies_full_archive(tmp_path,monkeypatch):
 
 def test_incorrect_resume_offset_cannot_publish_corrupt_archive(tmp_path,monkeypatch):
  destination=tmp_path/'download.zip';destination.with_suffix('.part').write_bytes(b'prefix')
- manifest={'url':'https://github.com/Laura-LLU/LauraPhysics/releases/download/test/assets.zip','bytes':20,'sha256':'0'*64}
+ manifest={'url':'https://github.com/Laura-LLU/OPBP-Bank/releases/download/test/assets.zip','bytes':20,'sha256':'0'*64}
  def open_response(*args,**kwargs):
   result=io.BytesIO(b'wrong bytes');result.status=206;result.headers={'Content-Range':'bytes 0-10/20'};return result
  monkeypatch.setattr(assets,'urlopen',open_response)

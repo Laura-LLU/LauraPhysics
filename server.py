@@ -15,7 +15,7 @@ BY_ID=core.QUESTION_BY_ID
 GENERATED=Path(os.environ.get('LAURAPHYSICS_OPEN_OUTPUT',str(Path.home()/'codex/PhysicsBank/开源版生成试卷'))).expanduser().resolve()
 PREVIEWS=GENERATED/'.previews'
 LOCK=threading.RLock()
-VERSION='0.7.42'
+VERSION='0.7.43'
 
 def exported_file(relative):
  target=(GENERATED/relative).resolve()
@@ -71,7 +71,7 @@ def create_export(payload):
  student,teacher,question_pages,answer_pages=draw_pdfs(payload,selected,folder)
  missing=[q['id'] for q in selected if not q.get('answerImage')]
  answer_status=f'{len(selected)-len(missing)}题答案已复核；采用教师自定评分表'
- record={'id':run,'runId':run,'course':'9702','courseLabel':'OPBP 物理题库','title':str(payload.get('title') or 'Physics Mock Examination')[:100],'createdAt':datetime.now().isoformat(timespec='seconds'),'selectedIds':[q['id'] for q in selected],'questionCount':len(selected),'className':str(payload.get('className',''))[:100],'studentName':str(payload.get('studentName',''))[:100],'dueDate':str(payload.get('dueDate',''))[:40],'marks':sum(q['marks'] for q in selected),'minutes':sum(q['minutes'] for q in selected),'estimatedMinutes':sum(q['minutes'] for q in selected),'origin':'OPBP','contentSource':f'OPBP {len(QUESTIONS)}题本地检查库','answerStatus':answer_status,'missingAnswerIds':missing,'missingAnswerCount':len(missing),'officialMarksAvailable':False,'scoringAvailable':True,'answerTeacherApproved':True,'scoringPolicy':'计算公式/过程2分+结果1分；参考结果显示2位有效数字，批改接受2或3位有效数字；描述按内容点','studentAvailable':True,'teacherAvailable':True,'studentUrl':f'/generated/{run}/{student.name}','teacherUrl':f'/generated/{run}/{teacher.name}','questionsUrl':f'/generated/{run}/{student.name}','answersUrl':f'/generated/{run}/{teacher.name}','manifestUrl':f'/generated/{run}/manifest.json','attribution':[{'id':q['id'],'author':q['author'],'sourceUrl':q['sourceUrl'],'license':q['license'],'sourceSha256':q['sourceSha256'],'retainedParts':q['retainedParts'],'answerAvailable':bool(q.get('answerImage')),'scopeStatus':q.get('scopeStatus'),'sourceIssues':q.get('sourceIssues',[])} for q in selected]}
+ record={'id':run,'runId':run,'course':'9702','courseLabel':'OPBP Bank','title':str(payload.get('title') or 'Physics Mock Examination')[:100],'createdAt':datetime.now().isoformat(timespec='seconds'),'selectedIds':[q['id'] for q in selected],'questionCount':len(selected),'className':str(payload.get('className',''))[:100],'studentName':str(payload.get('studentName',''))[:100],'dueDate':str(payload.get('dueDate',''))[:40],'marks':sum(q['marks'] for q in selected),'minutes':sum(q['minutes'] for q in selected),'estimatedMinutes':sum(q['minutes'] for q in selected),'origin':'OPBP','contentSource':f'OPBP {len(QUESTIONS)}题本地检查库','answerStatus':answer_status,'missingAnswerIds':missing,'missingAnswerCount':len(missing),'officialMarksAvailable':False,'scoringAvailable':True,'answerTeacherApproved':True,'scoringPolicy':'计算公式/过程2分+结果1分；参考结果显示2位有效数字，批改接受2或3位有效数字；描述按内容点','studentAvailable':True,'teacherAvailable':True,'studentUrl':f'/generated/{run}/{student.name}','teacherUrl':f'/generated/{run}/{teacher.name}','questionsUrl':f'/generated/{run}/{student.name}','answersUrl':f'/generated/{run}/{teacher.name}','manifestUrl':f'/generated/{run}/manifest.json','attribution':[{'id':q['id'],'author':q['author'],'sourceUrl':q['sourceUrl'],'license':q['license'],'sourceSha256':q['sourceSha256'],'retainedParts':q['retainedParts'],'answerAvailable':bool(q.get('answerImage')),'scopeStatus':q.get('scopeStatus'),'sourceIssues':q.get('sourceIssues',[])} for q in selected]}
  record['paperStyle']='CIE-style mock';record['scoringSnapshot']=[{'id':q['id'],'reviewId':q['reviewId'],'marks':q['marks'],'parts':q['scoringParts'],'approval':q['referenceAnswerApproval']} for q in selected]
  core.save_json(folder/'manifest.json',record)
  with LOCK:
@@ -110,7 +110,7 @@ class Handler(core.Handler):
  def do_GET(self):
   p=urlparse(self.path);query=parse_qs(p.query);course=self.course()
   if p.path=='/api/health':
-   self.send_json({'ok':True,'name':'LauraPhysics Open Competition','version':VERSION,'questions':len(bank(course)) if course else len(QUESTIONS),'course':course,'courses':{'0625':{'ok':True,'bank':0},'9702':{'ok':True,'bank':len(QUESTIONS)}},'contentSource':'OPBP','referenceAnswers':sum(bool(q.get('answerImage')) for q in QUESTIONS),'withoutReferenceAnswers':sum(not bool(q.get('answerImage')) for q in QUESTIONS),'answersPendingReview':False,'scoringAvailable':True,'totalMarks':sum(q['marks'] for q in QUESTIONS),'paperStyle':'CIE-style mock','automaticComposition':ai.composition_stats(QUESTIONS)});return
+   self.send_json({'ok':True,'name':'OPBP Bank','version':VERSION,'questions':len(bank(course)) if course else len(QUESTIONS),'course':course,'courses':{'0625':{'ok':True,'bank':0},'9702':{'ok':True,'bank':len(QUESTIONS)}},'contentSource':'OPBP','referenceAnswers':sum(bool(q.get('answerImage')) for q in QUESTIONS),'withoutReferenceAnswers':sum(not bool(q.get('answerImage')) for q in QUESTIONS),'answersPendingReview':False,'scoringAvailable':True,'totalMarks':sum(q['marks'] for q in QUESTIONS),'paperStyle':'CIE-style mock','automaticComposition':ai.composition_stats(QUESTIONS)});return
   if p.path=='/api/bank':self.send_json(bank(course or '9702'));return
   if p.path=='/api/settings':self.send_json(core.public_settings());return
   if p.path in ['/api/document','/api/document-page']:
@@ -222,7 +222,7 @@ def main():
  if args.host!='127.0.0.1':parser.error('Only localhost is supported')
  core.APP_DATA.mkdir(parents=True,exist_ok=True);GENERATED.mkdir(parents=True,exist_ok=True)
  http=ThreadingHTTPServer((args.host,args.port),Handler);http.course=args.course or ('0625' if args.port==8786 else '9702' if args.port==8787 else None)
- print(f'LauraPhysics Open Competition {VERSION} running at http://127.0.0.1:{args.port}',flush=True)
+ print(f'OPBP Bank {VERSION} running at http://127.0.0.1:{args.port}',flush=True)
  try:http.serve_forever()
  except KeyboardInterrupt:pass
  finally:http.server_close()

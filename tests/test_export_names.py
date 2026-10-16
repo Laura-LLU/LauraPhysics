@@ -6,7 +6,7 @@ def test_auto_name_describes_actual_selection_and_roles_share_stem():
         ("14", "Electric fields"), ("09", "Electricity"),
         ("15", "Capacitance"), ("10", "D.C. circuits"),
     ]]
-    stem = export_stem({"title": "OPBP 物理题库 · Electricity 等 专项练习"}, selected)
+    stem = export_stem({"title": "OPBP Bank · Electricity 等 专项练习"}, selected)
     assert stem == "Electricity"
 
 

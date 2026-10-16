@@ -104,7 +104,7 @@ def normalize_plan(plan, catalog):
         raise ValueError('单一题型与两类题的时间比例冲突，请调整要求。')
     if not ratio and not quotas and len(set(types)) != 1:
         ratio = {'选择题': 1, '大题': 1}
-    return {'title': core.normalize_opbp_title(plan.get('title'), 'OPBP 物理题库 · 综合练习')[:100], 'topics': picked,
+    return {'title': core.normalize_opbp_title(plan.get('title'), 'OPBP Bank · 综合练习')[:100], 'topics': picked,
             'subtopics': list(dict.fromkeys(subs)), 'paperTypes': list(dict.fromkeys(types)), 'difficulties': list(dict.fromkeys(difficulties)),
             'typeCounts': quotas, 'questionCount': count, 'targetMinutes': minutes, 'timeRatio': ratio}
 
@@ -312,7 +312,7 @@ def compose(payload, questions, catalog):
     reason = 'AI解析要求，按现有题库与教师评分表选题'
     if warnings:
         reason += '；' + '；'.join(warnings)
-    return {'ok': True, 'mode': mode, 'course': '9702', 'courseLabel': 'OPBP 物理题库', 'plan': plan,
+    return {'ok': True, 'mode': mode, 'course': '9702', 'courseLabel': 'OPBP Bank', 'plan': plan,
             'selectedIds': [q['id'] for q in selected], 'items': selected, 'questions': selected, 'questionCount': len(selected),
             'knownMarks': sum(q['marks'] for q in selected), 'estimatedMinutes': used_minutes, 'typeTimeAllocation': time_by_type, 'warnings': warnings,
             'route': {'reason': reason}, 'ordering': '选择题在前，大题在后；按OPBP编号排序', 'manualUrl': '/opbp',
@@ -416,7 +416,7 @@ def identify(payload, root, questions, records):
                               'maximum': question['marks'], 'paperType': question.get('paperType', ''),
                               'difficulty': question.get('difficulty', ''), 'pageNumbers': pages,
                               'firstPage': pages[0] if pages else 1, 'markPointCount': len(question['markScheme'])})
-    return {'ok': True, 'jobId': folder.name, 'recognition': {'jobId': folder.name}, 'course': '9702', 'courseLabel': 'OPBP 物理题库',
+    return {'ok': True, 'jobId': folder.name, 'recognition': {'jobId': folder.name}, 'course': '9702', 'courseLabel': 'OPBP Bank',
             'title': title, 'kind': 'mixed', 'matchedCount': len(ids), 'unresolvedCount': len(unresolved), 'unresolved': unresolved,
             'items': matched_items, 'originalUrl': f'/generated/marking/{folder.name}/Original.pdf', 'originalPages': page_count,
             'ready': not unresolved, 'matchedBy': job['matchedBy'], 'localOnly': True}
@@ -1791,7 +1791,7 @@ def batch_summary_pdf(payload, root):
             return Paragraph(summary_text_markup(value, font), selected)
         temporary = output / f'.summary-{uuid.uuid4().hex}.tmp.pdf'
         document = SimpleDocTemplate(str(temporary), pagesize=landscape(A4), rightMargin=36, leftMargin=36,
-                                     topMargin=34, bottomMargin=38, title='班级批改总结', author='LauraPhysics')
+                                     topMargin=34, bottomMargin=38, title='班级批改总结', author='OPBP Bank')
         story = [paragraph('班级批改总结', title_style),
                  paragraph(f"已确认 {statistics['approvedPapers']}/{statistics['totalPapers']} 份答卷 / {statistics['questionCount']} 道统计题目 / {statistics['reviewQuestionCount']} 道建议评讲"),
                  Spacer(1, 8), paragraph(f"评讲标记：全对率低于 {statistics['reviewThreshold']}%。只统计教师已确认且实际含该题的答卷，未确认与不计分题目不纳入。", small),
@@ -1825,7 +1825,7 @@ def batch_summary_pdf(payload, root):
         def footer(canvas, doc):
             canvas.setFont(font, 9)
             canvas.setFillColor(muted)
-            canvas.drawString(36, 20, 'LauraPhysics / 教师确认结果汇总')
+            canvas.drawString(36, 20, 'OPBP Bank / 教师确认结果汇总')
             canvas.drawRightString(landscape(A4)[0]-36, 20, f'第 {doc.page} 页')
         try:
             document.build(story, onFirstPage=footer, onLaterPages=footer)

@@ -1,8 +1,8 @@
 # 新 Mac 从 GitHub 部署与验收
 
-适用 v0.7.42。接收者独立安装，不复制原 Mac 的运行环境、钥匙串、历史、学生原卷，也不要只复制 `.app`。先验收网页版，与 App 使用同一后端。
+适用 v0.7.43。接收者独立安装，不复制原 Mac 的运行环境、钥匙串、历史、学生原卷，也不要只复制 `.app`。先验收网页版，与 App 使用同一后端。
 
-程序与资源独立版本：部署 `main` 或 v0.7.42 源码；安装器继续校验下载 v0.7.41 题图资源。已有源码可在检查并保存自己的修改后运行 `git pull --ff-only`，再重启服务、刷新网页。
+程序与资源独立版本：部署 `main` 或 v0.7.43 源码；安装器继续校验下载 v0.7.41 题图资源。已有源码可在检查并保存自己的修改后运行 `git pull --ff-only`，再重启服务、刷新网页。
 
 ## 1. 前提
 
@@ -13,10 +13,10 @@ Python 3.10–3.14，推荐 3.12；检查 `python3 --version`。系统 3.9 不�
 ## 2. 克隆与独立安装
 
 ```bash
-mkdir -p "$HOME/Applications/LauraPhysics-Source"
-cd "$HOME/Applications/LauraPhysics-Source"
-git clone https://github.com/Laura-LLU/LauraPhysics.git
-cd LauraPhysics
+mkdir -p "$HOME/Applications/OPBP-Bank-Source"
+cd "$HOME/Applications/OPBP-Bank-Source"
+git clone https://github.com/Laura-LLU/OPBP-Bank.git
+cd OPBP-Bank
 # 若没有另行设置证书，当前终端使用 Mac 自带的可信 CA；不关闭 HTTPS 验证。
 export SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}"
 python3 scripts/setup_environment.py --venv .venv
@@ -37,7 +37,7 @@ python3 scripts/setup_environment.py --venv .venv
 
 无模型也可检查：OPBP组卷→搜 P402/P403-1/P478→加入作业→预览→导出学生/教师卷。检查图片、中文、英文间距与 PDF 下载。
 
-若要与目标 Mac 上已有 LauraPhysics 数据完全隔离，在启动前设置：
+若要与目标 Mac 上已有 OPBP Bank 数据完全隔离，在启动前设置：
 
 ```bash
 export LAURAPHYSICS_OPEN_DATA="$PWD/.local/state"
@@ -72,7 +72,7 @@ export LAURAPHYSICS_DISABLE_LEGACY_CONFIG=1
 
 ## 6. 下载失败与资源核验
 
-在 [v0.7.41 Release](https://github.com/Laura-LLU/LauraPhysics/releases/tag/v0.7.41) 手动下载 `opbp-assets-v0.7.41.zip`：
+在 [v0.7.41 Release](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.41) 手动下载 `opbp-assets-v0.7.41.zip`：
 
 ```bash
 python3 scripts/bootstrap_assets.py --archive "$HOME/Downloads/opbp-assets-v0.7.41.zip"
@@ -86,7 +86,7 @@ python3 scripts/setup_environment.py --venv .venv
 
 | 问题 | 操作 |
 |---|---|
-| Git拉取长时间卡住/HTTP2报错 | 在新的目标目录使用 `git -c http.version=HTTP/1.1 clone https://github.com/Laura-LLU/LauraPhysics.git`，或GitHub Download ZIP；不覆盖自己的旧目录 |
+| Git拉取长时间卡住/HTTP2报错 | 在新的目标目录使用 `git -c http.version=HTTP/1.1 clone https://github.com/Laura-LLU/OPBP-Bank.git`，或GitHub Download ZIP；不覆盖自己的旧目录 |
 | Python 太旧 | 安装3.12并重建本项目独立环境 |
 | CERTIFICATE_VERIFY_FAILED | 官方Python安装包可能未安装CA证书；运行其 `Install Certificates.command`，或按上方步骤在当前终端设置 `SSL_CERT_FILE=/etc/ssl/cert.pem` 后重试。不要关闭TLS校验；换新终端需重新设置，模型请求也需要可信证书 |
 | ModuleNotFoundError | 使用 `.venv/bin/python`，重新安装，不借用作者 vendor |
@@ -97,3 +97,7 @@ python3 scripts/setup_environment.py --venv .venv
 | 排版不对 | 提供合法匿名 PDF 和具体页号 |
 
 回传 macOS 版本、Apple Silicon/Intel、Python版本、`git rev-parse HEAD`、`test-result.json` 和失败日志。只提供匿名可公开输出，不回传密钥、真实原卷、`.local` 或整个测试状态目录。只有第二台实体 Mac 的真实结果才能完成异机验收。
+
+## macOS 应用名称
+
+源码目录运行 `zsh scripts/build_macos.sh` 后生成 `build/OPBP Bank.app`。窗口、菜单、网页和新导出 PDF 均显示 OPBP Bank。原有应用标识、数据目录及环境变量保持兼容，避免丢失已保存配置。

@@ -49,7 +49,7 @@ def main():
     try:
         with urllib.request.urlopen(url + '/api/health', timeout=2) as response:
             health = json.load(response)
-        if health.get('name') == 'LauraPhysics Open Competition':
+        if health.get('name') == 'OPBP Bank':
             if args.open: webbrowser.open(url)
             print('本机网页已经运行：' + url); return 0
     except Exception:

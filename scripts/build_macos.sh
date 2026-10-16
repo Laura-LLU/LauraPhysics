@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="${0:A:h:h}"
 BUILD_DIR="$ROOT_DIR/build"
-APP_DIR="$BUILD_DIR/LauraPhysics 开源参赛版.app"
+APP_DIR="$BUILD_DIR/OPBP Bank.app"
 CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
@@ -15,7 +15,7 @@ SWIFT_MODULECACHE_PATH="$ROOT_DIR/tmp/swift-cache" swiftc -module-cache-path "$R
   -framework Cocoa \
   -framework WebKit \
   "$ROOT_DIR/native/main.swift" \
-  -o "$MACOS_DIR/LauraPhysicsOpen"
+  -o "$MACOS_DIR/OPBPBank"
 
 cp "$ROOT_DIR/native/Info.plist" "$CONTENTS_DIR/Info.plist"
 cp "$ROOT_DIR/server.py" "$RESOURCES_DIR/server.py"
@@ -37,7 +37,7 @@ mkdir -p "$RESOURCES_DIR/docs"
 cp -R "$ROOT_DIR/docs/." "$RESOURCES_DIR/docs/"
 cp -R "$ROOT_DIR/static/." "$RESOURCES_DIR/static/"
 cp -R "$ROOT_DIR/data/." "$RESOURCES_DIR/data/"
-cp "$ROOT_DIR/assets/LauraPhysicsOpen.icns" "$RESOURCES_DIR/LauraPhysicsOpen.icns"
+cp "$ROOT_DIR/assets/OPBPBank.icns" "$RESOURCES_DIR/OPBPBank.icns"
 
 codesign --force --deep --sign - "$APP_DIR"
 echo "$APP_DIR"

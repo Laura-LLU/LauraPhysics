@@ -1,5 +1,9 @@
 # 公开发布验收记录
 
+## 2026-10-16，v0.7.43：OPBP Bank 统一名称
+
+应用、网页、导出与部署资料统一为 OPBP Bank；GitHub 仓库迁至 `Laura-LLU/OPBP-Bank`，资源版本仍为 v0.7.41。旧的数据目录、钥匙串和环境变量保留兼容。本地 Mac ARM64 / Python 3.12.8 完整隔离验收 167/167 通过，0 失败、错误、跳过；Mac App 构建与临时签名验证通过。GitHub 三平台结果以本次提交的 Actions 实际状态与附件为准。测试不调用真实模型，不代表手写评分准确率。
+
 ## 2026-10-14，v0.7.42
 
 同步多选评分、2/3位有效数字、筛选区和网页工作区选中状态。本地 Mac ARM64 / Python3.12.8 完整隔离验收167/167通过，0失败、错误、跳过；测试不调用真实模型。公开源码安全检查通过，题库和题图资源清单未改变。GitHub三平台结果以本次提交的 Actions 实际状态及附件为准，不引用旧提交的131项作为本次结果。
@@ -9,17 +13,17 @@
 
 ## 2026-10-13，v0.7.41
 
-公开仓库：https://github.com/Laura-LLU/LauraPhysics 。代码 AGPL-3.0-only，题库素材独立许可；原私有 App、钥匙串、学生答卷与历史没有上传或修改。
+公开仓库：https://github.com/Laura-LLU/OPBP-Bank 。代码 AGPL-3.0-only，题库素材独立许可；原私有 App、钥匙串、学生答卷与历史没有上传或修改。
 
-提交 `ffd9b0ebd3f9574fc31e8174876feb6b07a8e0a3` 的 [GitHub Actions 实际执行](https://github.com/Laura-LLU/LauraPhysics/actions/runs/38420783474)：macOS ARM64、Windows x64、Linux x64 的 Python3.12 从干净环境下载校验资源、安装依赖与 Chromium，129项测试各全部通过，零失败、错误、跳过；可下载各平台 acceptance 附件中的 JSON、JUnit、覆盖率和匿名截图/PDF。最初一次 CI 在资源 Release 尚为草稿时下载失败，公开资源后重新执行通过；没有跳过失败测试。
+提交 `ffd9b0ebd3f9574fc31e8174876feb6b07a8e0a3` 的 [GitHub Actions 实际执行](https://github.com/Laura-LLU/OPBP-Bank/actions/runs/38420783474)：macOS ARM64、Windows x64、Linux x64 的 Python3.12 从干净环境下载校验资源、安装依赖与 Chromium，129项测试各全部通过，零失败、错误、跳过；可下载各平台 acceptance 附件中的 JSON、JUnit、覆盖率和匿名截图/PDF。最初一次 CI 在资源 Release 尚为草稿时下载失败，公开资源后重新执行通过；没有跳过失败测试。
 
 本地独立 Python3.12.8 ARM64 环境亦为129/129通过。覆盖规则、HTTP、浏览器交互、模拟文字/视觉模型协议、三并发与暂停、教师确认、PDF/ZIP导出。模拟接口不调用真实付费模型，不证明真人手写识别准确率。覆盖率仅统计当前进程，不含 HTTP 子进程。
 
-后续修复网络短响应的断点续传，并新增2项完整性/Range回归测试；提交 `5e1c25941f0959f3844fcd151ff647f1d3fad864` 从公开GitHub新克隆、匿名下载全部资源、创建全新 `.venv` 后实际131/131通过（Python3.12.8 / Mac ARM64，Git干净，39.4秒），900题无缺图、全部6,420图片校验通过、pip依赖无冲突。最新[131项CI复跑与报告附件](https://github.com/Laura-LLU/LauraPhysics/actions/runs/38422433312)以实际状态为准。
+后续修复网络短响应的断点续传，并新增2项完整性/Range回归测试；提交 `5e1c25941f0959f3844fcd151ff647f1d3fad864` 从公开GitHub新克隆、匿名下载全部资源、创建全新 `.venv` 后实际131/131通过（Python3.12.8 / Mac ARM64，Git干净，39.4秒），900题无缺图、全部6,420图片校验通过、pip依赖无冲突。最新[131项CI复跑与报告附件](https://github.com/Laura-LLU/OPBP-Bank/actions/runs/38422433312)以实际状态为准。
 
 最新复跑已完成：macOS、Windows、Linux各131/131全部通过，零失败/错误/跳过。后续仅提交验收文字说明，不改变该已测运行代码。
 
-资源单独发布于 [v0.7.41 Release](https://github.com/Laura-LLU/LauraPhysics/releases/tag/v0.7.41)：6,420张题库/排版图片，667,101,189字节 ZIP，SHA-256 `ca9d308bfc7d0b21c37c903e87db45b6274e97b2350573796de4690c054c7281`，与公开清单及GitHub上传摘要一致。
+资源单独发布于 [v0.7.41 Release](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.41)：6,420张题库/排版图片，667,101,189字节 ZIP，SHA-256 `ca9d308bfc7d0b21c37c903e87db45b6274e97b2350573796de4690c054c7281`，与公开清单及GitHub上传摘要一致。
 
 安装排障实测：本地 Git HTTP/2 曾停滞，HTTP/1.1 新克隆成功；官方 Python 缺CA证书导致首次 HTTPS 下载失败，Mac系统可信CA能建立验证通过的HTTPS连接。指南包含这些操作，不通过禁用TLS校验规避。
 

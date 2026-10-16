@@ -80,12 +80,12 @@ def install_archive(archive, manifest, root):
                 (stage/name).replace(target)
 
 def download(manifest, destination):
-    if not manifest['url'].startswith('https://github.com/Laura-LLU/LauraPhysics/releases/download/'):
+    if not manifest['url'].startswith('https://github.com/Laura-LLU/OPBP-Bank/releases/download/'):
         raise ValueError('Unexpected resource download host')
     partial = destination.with_suffix('.part')
     for attempt in range(3):
         offset = partial.stat().st_size if partial.is_file() else 0
-        headers = {'User-Agent':'LauraPhysics-resource-installer/1'}
+        headers = {'User-Agent':'OPBP-Bank-resource-installer/1'}
         if offset: headers['Range'] = 'bytes='+str(offset)+'-'
         try:
             with urlopen(Request(manifest['url'], headers=headers), timeout=45) as response:

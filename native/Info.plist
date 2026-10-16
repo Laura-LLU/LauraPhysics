@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>LauraPhysics 开源参赛版</string>
+	<string>OPBP Bank</string>
 	<key>CFBundleExecutable</key>
-	<string>LauraPhysicsOpen</string>
+	<string>OPBPBank</string>
 	<key>CFBundleIconFile</key>
-	<string>LauraPhysicsOpen.icns</string>
+	<string>OPBPBank.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.laura-llu.lauraphysics.open</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>LauraPhysicsOpen</string>
+	<string>OPBP Bank</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.7.42</string>
+	<string>0.7.43</string>
 	<key>CFBundleVersion</key>
-	<string>65</string>
+	<string>66</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>13.0</string>
 	<key>NSHighResolutionCapable</key>

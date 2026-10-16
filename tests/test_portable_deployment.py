@@ -29,13 +29,13 @@ def test_portable_archive_contains_new_modules_current_version_and_verified_mani
     result=release.prepare(tmp_path/'package')
     assert 'v9.8.7-' in result['archive']
     with zipfile.ZipFile(result['archive']) as archive:
-        names=archive.namelist();assert 'LauraPhysics/question_pool.py' in names
-        assert 'LauraPhysics/requirements-test.txt' in names
+        names=archive.namelist();assert 'OPBP-Bank/question_pool.py' in names
+        assert 'OPBP-Bank/requirements-test.txt' in names
         assert not any('/vendor/' in name or 'ai-settings.json' in name for name in names)
-        manifest=json.loads(archive.read('LauraPhysics/release-manifest.json'))
+        manifest=json.loads(archive.read('OPBP-Bank/release-manifest.json'))
         assert manifest['portable'] and manifest['version']=='9.8.7'
         for name,checksum in manifest['files'].items():
-            assert hashlib.sha256(archive.read('LauraPhysics/'+name)).hexdigest()==checksum
+            assert hashlib.sha256(archive.read('OPBP-Bank/'+name)).hexdigest()==checksum
 
 
 def test_release_rejects_secrets_in_browser_assets(tmp_path,monkeypatch):
