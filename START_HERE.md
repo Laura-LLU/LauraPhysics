@@ -27,3 +27,5 @@ Windows：
 完整自动化验收用`scripts/run_tests.py --install --output test-results`，用上方相应Python执行。它隔离真实配置、不调用付费模型。运行和停止、其他端口、依赖/证书错误、模型错误均见[完整评委指南](docs/JUDGE_QUICKSTART.md)。
 
 [图解功能说明](docs/FEATURE_TOUR.md) · [Mac详细部署](docs/MAC_DEPLOYMENT.md) · [测试范围](docs/TESTING.md) · [内容许可](CONTENT_LICENSES.md) · [已知限制](docs/KNOWN_LIMITATIONS.md)
+
+Release源码ZIP不含Git历史，自动化报告的gitCommit可能为空；可用随包release-manifest.json和Release提供的SHA256SUMS.txt核对内容。Git克隆部署则核对版本标签与提交。

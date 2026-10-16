@@ -103,7 +103,7 @@ Windows：
 .venv\Scripts\python.exe scripts/run_tests.py --install --output test-results
 ```
 
-首次会下载测试依赖和Chromium。成功标志：test-results/test-result.json中ok为true，passed与本版实际报告一致，failures/errors/skipped为0。确认版本0.7.45和报告中的gitCommit与本版源码一致；结果数会随新版本用例变化。无需Key，不调用真实付费模型；有模拟模型协议测试，不替代上述真实AI演示。
+首次会下载测试依赖和Chromium。成功标志：test-results/test-result.json中ok为true，passed与本版实际报告一致，failures/errors/skipped为0。确认版本0.7.45；Git克隆部署可将报告gitCommit与本版本标签核对。源码ZIP不含.git，gitCommit可能为空，此时以发布包SHA-256及release-manifest.json逐文件校验为准。结果数会随新版本用例变化。无需Key，不调用真实付费模型；有模拟模型协议测试，不替代上述真实AI演示。
 
 公开验收见本次Release关联的Actions与仓库[验收记录](VALIDATION.md)。本版结果以对应提交的报告为准，不把其他版本结果当作本次证据。工程验收不代表真实手写识别准确率。
 
