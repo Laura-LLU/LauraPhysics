@@ -1,10 +1,8 @@
-# 演示样例来源与使用说明
+# 单页小样来源与许可
 
-答卷笔迹由项目维护者 Laura-LLU 本人填写，并于2026-10-16明确授权随项目公开。各演示选页（包含所加笔迹）按下列原题对应内容许可分发，不受代码AGPL覆盖：Demo-01与Demo-03为CC BY-NC-SA 4.0，Demo-02为CC BY 4.0。保留作者、来源、许可和修改说明。
+自写笔迹由维护者Laura-LLU提供。Demo-01、Demo-03按CC BY-NC-SA 4.0提供，Demo-02按CC BY 4.0提供。
 
-各输入文件为自写原卷的单页副本，剔除姓名页、清除文档元数据与非页面附件，固化可见笔迹并更新项目页脚；原始文件未改。未包含真实学生记录、密钥、教师私人历史或模型输出。
-
-题目来自项目已公开的OPBP题库，原始链接和许可如下。参考评分点为本项目教师参考规则，不是考试局官方评分表。
+处理方式：选取答卷单页、清理身份信息与文档元数据、固化可见笔迹、设置项目页脚。文件SHA-256和逐题信息见[sample-manifest.json](sample-manifest.json)。
 
 ## Demo-01-Multiple-Choice-AB.pdf
 
@@ -23,4 +21,4 @@
 - P403-1: Force Multipart True False Question; author: John Hopkinson; license: CC BY-NC-SA 4.0.
   Source: https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Topic%20Outcome/forceMultipartTrueFalse/forceMultipartTrueFalse.md
 
-许可全文与说明：[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode) · [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)。包含非商业限制的样例不因程序代码开源而转为无条件商用。
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode) · [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)。使用时保留署名、来源、许可及处理说明。

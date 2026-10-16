@@ -1,14 +1,14 @@
-# 参赛交付检查
+# 项目交付内容
 
-官网：https://www.oschina.net/os2026/ 。2026-10-13核验的通用权重：技术创新30%、场景落地30%、开源治理20%、长期发展20%；企业命题另按任务书。仓库不是正式提交回执。
-
-| 要求 | 本仓库交付 | 待外部验证 |
-|---|---|---|
-| 完整可运行代码 | 后端/前端、900题数据、同项目Release图片、锁定依赖 | 新Mac独立拉取验收 |
-| 可测试 | 单元/API/浏览器/PDF/模拟模型全链路与CI | 真实手写、当前模型教师金标准 |
-| 开源治理 | AGPL代码、独立内容许可、署名、贡献/安全说明 | 特殊权利或商用场景核查 |
-| 创新/落地 | 本地题号约束、教师控制、证据评分原卷导出 | 冻结样本对照、同行反馈 |
-| 长期维护 | Issue/PR、版本、持续测试、限制说明 | 实际维护记录与负责人计划 |
-| 正式提交 | 源码和部署/测试文档 | 介绍PDF、演示视频、提交确认 |
-
-许可或CI通过不等于官方整体批准。不得提交密钥、未许可考试题或真实学生数据；代码与题库权利分开。
+| 内容 | 位置 |
+|---|---|
+| 源码与运行入口 | 根目录Python模块、static、START_HERE.md |
+| 独立部署 | scripts/setup_environment.py、docs/JUDGE_QUICKSTART.md |
+| 模型配置 | docs/BAILIAN_SETUP.md |
+| 功能与界面 | docs/FEATURE_TOUR.md |
+| 完整测试试卷 | examples/full-papers/ |
+| 规则小样及人工预期 | examples/marking-demo/ |
+| 自动化测试 | tests/、scripts/run_tests.py、GitHub Actions |
+| 人工操作记录 | docs/MANUAL_ACCEPTANCE.csv |
+| 代码与内容许可 | LICENSE、CONTENT_LICENSES.md、THIRD_PARTY_NOTICES.md |
+| 贡献与安全 | CONTRIBUTING.md、SECURITY.md |

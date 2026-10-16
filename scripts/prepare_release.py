@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKIP = {'build', 'tmp', '.venv', '.test-output', '__pycache__', '.pytest_cache', '.git', '.DS_Store', 'generated', 'private-evaluation'}
 TOP_FILES = {'server.py', 'core_server.py', 'ai_workflows.py', 'exam_pdf.py', 'environment_check.py', 'requirements.txt',
              'requirements-tested.txt', 'requirements-test.txt', 'README.md', 'LICENSE', 'CONTENT_LICENSES.md', 'SECURITY.md', 'THIRD_PARTY_NOTICES.md', 'CONTRIBUTING.md',
-             'CHANGELOG.md', 'START_HERE.md', '.gitignore', '.gitattributes'}
+             'START_HERE.md', '.gitignore', '.gitattributes'}
 TOP_DIRS = {'data', 'static', 'native', 'assets', 'vendor', 'scripts', 'docs', 'tests', '.github', 'examples'}
 
 def prepare(output, include_macos_vendor=False):

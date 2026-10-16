@@ -1,57 +1,42 @@
-# 新 Mac 从 GitHub 部署与验收
+# macOS 部署
 
-适用 v0.7.46。接收者独立安装，不复制原 Mac 的运行环境、钥匙串、历史、学生原卷，也不要只复制 `.app`。先验收网页版，与 App 使用同一后端。
+## 环境
 
-程序与资源独立版本：部署 `main` 或 v0.7.46 源码；安装器继续校验下载 v0.7.41 题图资源。已有源码可在检查并保存自己的修改后运行 `git pull --ff-only`，再重启服务、刷新网页。
+推荐Python 3.12，支持3.10–3.14；至少4 GB本地空间，首次安装需要联网。Python可从[官网下载](https://www.python.org/downloads/macos/)。
 
-### 已部署电脑更新至 v0.7.46
+[下载源码包](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.47)并解压，或用Git克隆。在源码目录执行以下步骤。
 
-先停止当前网页服务，在项目目录检查 `git status --short`。如果有本机修改，先保存或备份并核对，不要强制覆盖。工作区干净时执行：
-
-```bash
-git pull --ff-only
-.venv/bin/python scripts/run_web.py --check
-.venv/bin/python scripts/run_web.py --open
-```
-
-刷新网页，确认版本为0.7.44。该版本修复题旁批注/点评对齐、P456对称面积乘2的过程分、计算结果2或3位有效数字检查。未确认草稿会复查；已下载的旧PDF不会自动变化，已确认结果需教师重新核对后再导出。源码更新不会自动替换独立安装的旧`.app`；若使用App外壳，按本文后面的构建步骤重新构建，不要复制覆盖原来的数据目录。
-
-评委统一入口：[START_HERE.md](../START_HERE.md)。百炼配置见[BAILIAN_SETUP.md](BAILIAN_SETUP.md)，公开自写答卷见[examples/marking-demo](../examples/marking-demo/)。
-
-## 1. 前提
-
-Python 3.10–3.14，推荐 3.12；检查 `python3 --version`。系统 3.9 不够，可从 https://www.python.org/downloads/macos/ 安装 3.12；有 Homebrew 也可安装 `python@3.12`。Git 用 `git --version` 检查，按 macOS 提示安装开发工具即可，也可用 GitHub 的 Download ZIP。
-
-需要网络，建议至少 4 GB 空间。首次下载题图约 636 MB，解压约 690 MB，依赖与测试浏览器还需空间。源码放本地硬盘，不放 iCloud/网络同步目录。
-
-## 2. 克隆与独立安装
+## 安装与启动
 
 ```bash
-mkdir -p "$HOME/Applications/OPBP-Bank-Source"
-cd "$HOME/Applications/OPBP-Bank-Source"
-git clone https://github.com/Laura-LLU/OPBP-Bank.git
-cd OPBP-Bank
-# 若没有另行设置证书，当前终端使用 Mac 自带的可信 CA；不关闭 HTTPS 验证。
 export SSL_CERT_FILE="${SSL_CERT_FILE:-/etc/ssl/cert.pem}"
 python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/run_web.py --check
-```
-
-若目标目录已存在，先检查自己的旧工作，不删除覆盖。安装会下载锁定 Release 题图、校验 ZIP/逐图片 SHA-256，创建本项目 `.venv`、安装锁定依赖并检查完整题库；不修改系统 Python。
-
-`--check` 应有 `ok:true`、`questionCount:900`、`missingAssets:[]`、`bundledWheelEnabled:false`，无需密钥。
-
-## 3. 启动与人工操作
-
-```bash
 .venv/bin/python scripts/run_web.py --open
 ```
 
-访问 http://127.0.0.1:8895/ ，保持终端运行，退出用 `Control+C`。端口被其他程序占用时用 `--port 8896 --open`，不要改成公网监听。
+安装器下载题图，校验ZIP与逐文件SHA-256，创建`.venv`并安装依赖。检查应显示`ok:true`、`questionCount:900`和`missingAssets:[]`。
 
-无模型也可检查：OPBP组卷→搜 P402/P403-1/P478→加入作业→预览→导出学生/教师卷。检查图片、中文、英文间距与 PDF 下载。
+浏览器访问 http://127.0.0.1:8895/ ，按`Control+C`停止服务；其他端口可使用`--port 8896 --open`。
 
-若要与目标 Mac 上已有 OPBP Bank 数据完全隔离，在启动前设置：
+## 组卷与批改
+
+“OPBP组卷”可直接筛选、预览、导出；“AI组卷”和“AI批改”按[百炼教程](BAILIAN_SETUP.md)配置账户。macOS在“模型设置”填写Key并保存到系统钥匙串。
+
+完整答卷与操作见[评委指南](JUDGE_QUICKSTART.md)。
+
+## 自动化测试
+
+```bash
+.venv/bin/python scripts/verify_demo_samples.py --full-papers
+.venv/bin/python scripts/run_tests.py --install --output test-results
+```
+
+前者检查3份整卷，后者输出JSON、JUnit、日志、截图和导出文件。成功时`test-result.json`中`ok:true`且失败、错误、跳过均为0。
+
+## 独立数据目录
+
+可在启动前指定本项目的数据和导出位置：
 
 ```bash
 export LAURAPHYSICS_OPEN_DATA="$PWD/.local/state"
@@ -60,33 +45,9 @@ export LAURAPHYSICS_DISABLE_LEGACY_CONFIG=1
 .venv/bin/python scripts/run_web.py --open
 ```
 
-只影响当前终端，不移动或删除旧数据；`.local` 不上传 GitHub。
+## 题图下载
 
-## 4. 自动化测试
-
-```bash
-.venv/bin/python scripts/run_tests.py --install --output test-results
-```
-
-测试自行选端口、启动隔离服务，无需密钥，不调用付费模型。首次下载测试依赖/Chromium需网络，后续可不带 `--install`。
-
-`test-results/test-result.json` 应为 `ok:true`、失败/错误/跳过均0。发布新增测试后总数会变，不只比较旧115。查看 JUnit、日志、覆盖率页面和 `evidence/` 截图、PDF/ZIP。模拟模型的流程成功不等于真实手写准确率。
-
-## 5. 真实 AI 单独验收
-
-用自己的账户在网页模型设置填写兼容接口、文字/视觉模型及 Key，Mac 保存到系统钥匙串；不写仓库、不出现在截图/反馈。
-
-默认百炼 `qwen3.8-flash` 组卷、`qwen3.7-plus` 批改，先确认账户可用和额度。文字/图片连接测试只证明联通。
-
-首次打开已自动填入百炼接口及模型名，只需填写自己的百炼 API Key。无需安装本地 Qwen / Ollama，界面不再提供 DeepSeek 或本地 Qwen 快捷入口。仓库不附带作者密钥或免费额度；已有显式保存配置保留，不会自动覆盖。
-
-使用有权发送的匿名自写样例：自然语言组卷→导出→写明显对/错/空白答案→上传保留印刷 P 题号的 PDF→本机匹配确认→AI批改→教师复核→单份确认→批量导出。四份卷检查最多三并发、暂停切页、继续、自动下一份。原卷标注、评分栏、总分与总结应一致。
-
-调用可能计费；不要上传未授权学生原卷。扫描 PNG/JPG 自动题号识别有限制，不把失败误认为安装失败。
-
-## 6. 下载失败与资源核验
-
-在 [v0.7.41 Release](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.41) 手动下载 `opbp-assets-v0.7.41.zip`：
+安装器自动取得题图资源。也可在[资源下载页](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.41)取得`opbp-assets-v0.7.41.zip`，再安装：
 
 ```bash
 python3 scripts/bootstrap_assets.py --archive "$HOME/Downloads/opbp-assets-v0.7.41.zip"
@@ -94,24 +55,14 @@ python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/bootstrap_assets.py --verify
 ```
 
-校验错误时重下完整文件，不关闭校验。安装器不会覆盖已自行修改的图片。
+## 原生窗口
 
-## 7. 排查与回传
+完成环境安装后，在源码目录运行：
 
-| 问题 | 操作 |
-|---|---|
-| Git拉取长时间卡住/HTTP2报错 | 在新的目标目录使用 `git -c http.version=HTTP/1.1 clone https://github.com/Laura-LLU/OPBP-Bank.git`，或GitHub Download ZIP；不覆盖自己的旧目录 |
-| Python 太旧 | 安装3.12并重建本项目独立环境 |
-| CERTIFICATE_VERIFY_FAILED | 官方Python安装包可能未安装CA证书；运行其 `Install Certificates.command`，或按上方步骤在当前终端设置 `SSL_CERT_FILE=/etc/ssl/cert.pem` 后重试。不要关闭TLS校验；换新终端需重新设置，模型请求也需要可信证书 |
-| ModuleNotFoundError | 使用 `.venv/bin/python`，重新安装，不借用作者 vendor |
-| Chromium 未就绪 | `.venv/bin/python -m playwright install chromium` |
-| 页面打不开 | 检查终端、端口和错误日志 |
-| 模型404/额度不足 | 核对自己模型与账户，重装不能解决权限 |
-| 扫描件失败 | 优先用可提取印刷题号的 PDF，见已知限制 |
-| 排版不对 | 提供合法匿名 PDF 和具体页号 |
+```bash
+zsh scripts/build_macos.sh
+```
 
-回传 macOS 版本、Apple Silicon/Intel、Python版本、`git rev-parse HEAD`、`test-result.json` 和失败日志。只提供匿名可公开输出，不回传密钥、真实原卷、`.local` 或整个测试状态目录。只有第二台实体 Mac 的真实结果才能完成异机验收。
+输出为`build/OPBP Bank.app`，打开后使用本机Python环境与题库。模型设置、导出和测试流程与网页相同。
 
-## macOS 应用名称
-
-源码目录运行 `zsh scripts/build_macos.sh` 后生成 `build/OPBP Bank.app`。窗口、菜单、网页和新导出 PDF 均显示 OPBP Bank。原有应用标识、数据目录及环境变量保持兼容，避免丢失已保存配置。
+证书、依赖和端口问题见[故障排查](安装与故障排查.md)。

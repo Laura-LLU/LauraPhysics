@@ -1,18 +1,10 @@
-# 界面截图来源、匿名性与许可
+# 截图来源与许可
 
-拍摄日期：2026-10-16。程序版本：OPBP Bank v0.7.44。
+图片为当前程序的网页操作和PDF导出效果，使用四份排版演示答卷。AI规划与评分由本机模拟服务提供。
 
-## 截图说明
+## 内容署名
 
-- `01`至`07`为独立本机环境中的实际网页操作截图；`08`、`09`为该流程实际导出PDF的页面渲染，不是设计稿或AI绘制的界面。
-- 使用专为演示制作的4份匿名排版答卷（Demo-A01至A04）；没有发布真实学生姓名、笔迹、原卷、账号Key或作者运行历史。
-- AI规划和视觉评分响应由本机模拟服务提供，真实外部模型请求数为0；只用于展示功能与操作链路，不证明Qwen或其他模型的手写识别、物理解题或评分准确率。
-- AI组卷和批改采用各自固定演示样例，不宣称所有截图是同一份试卷。导出/目录定位的系统打开动作在拍摄时禁用；网页下载和文件生成实际执行。
-- 画面显示按教师规则产生的参考评分，不是Cambridge官方Mark Scheme认证。角色、作业和分数均为演示。
-
-## OPBP内容署名
-
-截图中题干、原图、参考答案或评分表衍生自下列OPBP公开资源。处理包括选取与排版、中文界面说明、教师自定评分点、匿名排版作答及批改标记；未因此取得官方试题或评分标准身份。
+截图中的题干、原图、参考答案与评分表取自以下OPBP资源，处理包括选题、排版、教师评分点编排、演示作答及批改标记。
 
 | OPBP题号 | 原作者 | 内容许可 | 原始来源 |
 |---|---|---|---|
@@ -23,4 +15,4 @@
 | P478 · Position Vector and Momentum | Tarek Alkabbani | CC BY-NC-SA 4.0 | [源题](https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/What%20is%20r_mv/What%20is%20r_mv.md) |
 | P087 · Bouncing Ball | Jake Bobowski | CC BY-NC-SA 4.0 | [源题](https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Impulse/Bouncing_Ball/Bouncing_Ball.md) |
 
-以上内容及其截图中的相关衍生部分保留[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)署名、非商业及相同方式共享要求；程序代码许可另见[LICENSE](../../LICENSE)。不要把题库图示或整张衍生截图当成不受内容许可限制的AGPL代码素材。完整题库许可边界见[CONTENT_LICENSES](../../CONTENT_LICENSES.md)。
+相关内容遵循[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)的署名、非商业和相同方式共享要求。程序代码见[LICENSE](../../LICENSE)，完整题库许可见[CONTENT_LICENSES.md](../../CONTENT_LICENSES.md)。

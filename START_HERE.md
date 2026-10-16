@@ -1,31 +1,53 @@
-# 评委请从这里开始：OPBP Bank v0.7.46
+# 安装与运行
 
-源码包内已包含部署说明、百炼配置教程、三份完整自写测试试卷，以及原有单页规则小样及其人工预期。首次安装需要网络下载校验题图和依赖；不含维护者运行环境或密钥，不是完全离线包。
+[OPBP物理题库-AI组卷和批改工具](README.md) · v0.7.47
 
-1. [安装并启动网页](docs/JUDGE_QUICKSTART.md#2-先安装并验证无模型模式)：推荐Python 3.12，在新本地目录安装，成功后打开http://127.0.0.1:8895/。
-2. 无模型先到“OPBP组卷”检查选题、预览及学生/教师卷导出。
-3. [检查三份完整试卷](examples/full-papers/README.md)：运行下方带`--full-papers`的指令，每份7页、6题、满分12分；三份应全部通过文件和题号匹配检查。原有[单页小样](examples/marking-demo/README.md)也保留。
-4. [配置自己的百炼接口与Key](docs/BAILIAN_SETUP.md)，再上传样例进行真实AI批改与教师复核。
-5. 仅原有单页小样的[人工预期结果](examples/marking-demo/EXPECTED_RESULTS.md)为5/6；这是人工预期，不能套用到三份整卷；[10项人工验收表](docs/MANUAL_ACCEPTANCE.csv)的实际结果列由评测者填写。
+## 1. 安装
 
-Mac/Linux安装后：
+准备Python 3.12、联网环境和至少4 GB本地空间。下载[发布包](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.47)并解压，在 `OPBP-Bank` 目录运行。
+
+macOS / Linux：
 
 ```bash
+python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/run_web.py --check
-.venv/bin/python scripts/verify_demo_samples.py --full-papers
 .venv/bin/python scripts/run_web.py --open
 ```
 
-Windows：
+Windows PowerShell：
 
 ```powershell
+py -3.12 scripts/setup_environment.py --venv .venv
 .venv\Scripts\python.exe scripts/run_web.py --check
-.venv\Scripts\python.exe scripts/verify_demo_samples.py --full-papers
 .venv\Scripts\python.exe scripts/run_web.py --open
 ```
 
-完整自动化验收用`scripts/run_tests.py --install --output test-results`，用上方相应Python执行。它隔离真实配置、不调用付费模型。运行和停止、其他端口、依赖/证书错误、模型错误均见[完整评委指南](docs/JUDGE_QUICKSTART.md)。
+检查结果应为 `ok:true`、`questionCount:900`、`missingAssets:[]`。浏览器访问 http://127.0.0.1:8895/ ，终端保持运行，按 `Control+C` 停止。
 
-[图解功能说明](docs/FEATURE_TOUR.md) · [Mac详细部署](docs/MAC_DEPLOYMENT.md) · [测试范围](docs/TESTING.md) · [内容许可](CONTENT_LICENSES.md) · [已知限制](docs/KNOWN_LIMITATIONS.md)
+## 2. 组卷
 
-Release源码ZIP不含Git历史，自动化报告的gitCommit可能为空；可用随包release-manifest.json和Release提供的SHA256SUMS.txt核对内容。Git克隆部署则核对版本标签与提交。
+切到“OPBP组卷”，搜索P402，加入作业，预览并导出学生卷和答案卷。使用[百炼教程](docs/BAILIAN_SETUP.md)配置模型后，可在“AI组卷”输入要求生成试卷。
+
+## 3. 测试答卷
+
+在“AI批改”上传 [Student-Paper 2、3、4](examples/full-papers/README.md)，核对题号，确认发送模型，再逐题复核、确认并导出。
+
+无需Key的整卷输入检查：
+
+```bash
+.venv/bin/python scripts/verify_demo_samples.py --full-papers
+```
+
+Windows使用`.venv\Scripts\python.exe`。预期为3份通过，每份7页、6个题号、满分12分。
+
+[单页规则小样](examples/marking-demo/README.md)另有逐题人工预期，可单独核对多选和有效数字规则。
+
+## 4. 自动化验收
+
+```bash
+.venv/bin/python scripts/run_tests.py --install --output test-results
+```
+
+Windows使用`.venv\Scripts\python.exe`。成功时 `test-results/test-result.json` 中 `ok` 为 `true`，失败、错误和跳过均为0。
+
+[完整部署指南](docs/JUDGE_QUICKSTART.md) · [故障排查](docs/安装与故障排查.md) · [功能图解](docs/FEATURE_TOUR.md) · [测试说明](docs/TESTING.md)

@@ -9,6 +9,7 @@ MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR/static" "$RESOURCES_DIR/data"
+rm -f "$RESOURCES_DIR/CHANGELOG.md"
 
 SWIFT_MODULECACHE_PATH="$ROOT_DIR/tmp/swift-cache" swiftc -module-cache-path "$ROOT_DIR/tmp/swift-cache" \
   -O \
@@ -32,7 +33,7 @@ if [[ -d "$ROOT_DIR/vendor" ]]; then
 fi
 cp "$ROOT_DIR/requirements.txt" "$RESOURCES_DIR/requirements.txt"
 cp "$ROOT_DIR/requirements-tested.txt" "$RESOURCES_DIR/requirements-tested.txt"
-cp "$ROOT_DIR/README.md" "$ROOT_DIR/CONTRIBUTING.md" "$ROOT_DIR/CHANGELOG.md" "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$ROOT_DIR/LICENSE" "$ROOT_DIR/CONTENT_LICENSES.md" "$RESOURCES_DIR/"
+cp "$ROOT_DIR/README.md" "$ROOT_DIR/CONTRIBUTING.md" "$ROOT_DIR/THIRD_PARTY_NOTICES.md" "$ROOT_DIR/LICENSE" "$ROOT_DIR/CONTENT_LICENSES.md" "$RESOURCES_DIR/"
 mkdir -p "$RESOURCES_DIR/docs"
 cp -R "$ROOT_DIR/docs/." "$RESOURCES_DIR/docs/"
 cp -R "$ROOT_DIR/static/." "$RESOURCES_DIR/static/"
