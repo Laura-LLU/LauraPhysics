@@ -4,7 +4,7 @@
 <script src="/paper-labels.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OPBP Bank · AI 组卷与评卷</title>
+<title>OPBP物理题库-AI组卷和批改工具</title>
 <style>
 :root{--navy:#142338;--navy-2:#203651;--paper:#f4f1ea;--card:#fff;--ink:#182536;--muted:#687487;--line:#d7d3ca;--blue:#1765ad;--blue-soft:#e8f2fb;--red:#c6493b;--red-soft:#fff0ed;--green:#237458;--shadow:0 15px 45px rgba(26,42,61,.1)}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus,select:focus,textarea:focus{outline:3px solid rgba(23,101,173,.24);outline-offset:2px}
@@ -33,7 +33,7 @@
 <script src="/export-feedback.js" defer></script>
 </head>
 <body><link rel="stylesheet" href="/web-shell.css"><nav class="web-shell" aria-label="工作区切换"><b>工作区</b><a class="workspace-link is-active" href="/" aria-current="page">AI 组卷与批改</a><a class="workspace-link" href="/opbp">OPBP 组卷</a><a class="copyright" href="/copyright" target="_blank">OPBP · 版权说明</a></nav><script>if(window.webkit?.messageHandlers?.copyImage)document.querySelector(".web-shell").hidden=true;</script>
-<header class="hero"><div class="hero-inner"><div class="hero-line"><div><h1>OPBP Bank · AI 组卷与评卷</h1><div class="subtitle">OPBP 原题按 9702 考纲分类；组卷和参考答案由教师检查。</div></div><div class="hero-tools"><a class="brand" href="https://github.com/Laura-LLU" target="_blank" rel="noopener"><span class="brand-mark">L</span>Laura-LLU</a><span class="status-pill" id="connection">正在连接 OPBP 题库…</span></div></div><nav class="tabs" aria-label="AI 助手功能"><button class="tab active" data-view="compose" onclick="switchView('compose')">AI 组卷</button><button class="tab" data-view="marking" onclick="switchView('marking')">AI 批改</button><button class="tab" data-view="homework" onclick="switchView('homework')">我的作业</button></nav></div></header>
+<header class="hero"><div class="hero-inner"><div class="hero-line"><div><h1>OPBP物理题库-AI组卷和批改工具</h1><div class="subtitle">OPBP 原题按 9702 考纲分类；组卷和参考答案由教师检查。</div></div><div class="hero-tools"><a class="brand" href="https://github.com/Laura-LLU" target="_blank" rel="noopener"><span class="brand-mark">L</span>Laura-LLU</a><span class="status-pill" id="connection">正在连接 OPBP 题库…</span></div></div><nav class="tabs" aria-label="AI 助手功能"><button class="tab active" data-view="compose" onclick="switchView('compose')">AI 组卷</button><button class="tab" data-view="marking" onclick="switchView('marking')">AI 批改</button><button class="tab" data-view="homework" onclick="switchView('homework')">我的作业</button></nav></div></header>
 <div class="route-line" aria-hidden="true"><div class="route-track"><span class="route-node">OPBP 原题</span><span class="route-beam"></span><span class="route-core">AI</span><span class="route-beam"></span><span class="route-node">教师评分表</span></div></div>
 
 <section class="view active" id="composeView"><main class="workspace"><div class="intro"><div><h2>一句话组卷，直接检查 PDF</h2><p id="compositionPoolSummary">正在连接题库；导出CIE风格模拟卷。</p></div></div><div class="compose-grid">

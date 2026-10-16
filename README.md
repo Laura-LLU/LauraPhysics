@@ -1,4 +1,4 @@
-# OPBP Bank · AI 物理组卷与评卷工作台
+# OPBP物理题库-AI组卷和批改工具
 
 [![CI](https://github.com/Laura-LLU/OPBP-Bank/actions/workflows/ci.yml/badge.svg)](https://github.com/Laura-LLU/OPBP-Bank/actions/workflows/ci.yml)
 [![Code: AGPL-3.0](https://img.shields.io/badge/code-AGPL--3.0-blue.svg)](LICENSE)
