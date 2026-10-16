@@ -1,6 +1,6 @@
 # OPBP Bank：评委从安装到演示
 
-核对日期：2026-10-16。运行版本：v0.7.45；代码提交以本版本标签为准；release-manifest.json提供逐文件SHA-256校验。
+核对日期：2026-10-16。运行版本：v0.7.46；代码提交以本版本标签为准；release-manifest.json提供逐文件SHA-256校验。
 
 ## 1. 官方要求与本项目交付标准
 
@@ -15,13 +15,13 @@
 推荐Python 3.12；支持范围3.10-3.14。准备Git、可联网浏览器及本地硬盘空间，至少4GB，完整测试建议留8GB。首次需要下载约636MB题图与依赖；模型不是离线运行。不要复制作者的运行环境或私人配置。
 
 公开仓库：https://github.com/Laura-LLU/OPBP-Bank
-固定版本：https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.45
-详细Mac指南：https://github.com/Laura-LLU/OPBP-Bank/blob/v0.7.45/docs/MAC_DEPLOYMENT.md
+固定版本：https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.46
+详细Mac指南：https://github.com/Laura-LLU/OPBP-Bank/blob/v0.7.46/docs/MAC_DEPLOYMENT.md
 
 Mac/Linux终端，在自己选定的新本地目录运行：
 
 ```bash
-git clone --branch v0.7.45 --depth 1 https://github.com/Laura-LLU/OPBP-Bank.git
+git clone --branch v0.7.46 --depth 1 https://github.com/Laura-LLU/OPBP-Bank.git
 cd OPBP-Bank
 python3 scripts/setup_environment.py --venv .venv
 .venv/bin/python scripts/run_web.py --check
@@ -33,14 +33,14 @@ Mac若遇证书错误，按仓库Mac指南配置可信CA；不要关闭HTTPS校�
 Windows PowerShell，在新本地目录运行：
 
 ```powershell
-git clone --branch v0.7.45 --depth 1 https://github.com/Laura-LLU/OPBP-Bank.git
+git clone --branch v0.7.46 --depth 1 https://github.com/Laura-LLU/OPBP-Bank.git
 cd OPBP-Bank
 py -3.12 scripts/setup_environment.py --venv .venv
 .venv\Scripts\python.exe scripts/run_web.py --check
 .venv\Scripts\python.exe scripts/run_web.py --open
 ```
 
-成功标志：环境检查ok为true、题数900、missingAssets为空；浏览器打开 http://127.0.0.1:8895/ ，页面显示OPBP Bank。终端保持运行；结束按Control+C。端口已占用可追加--port 8896。所有服务仅监听本机。
+成功标志：环境检查ok为true、题数900、missingAssets为空；浏览器打开 http://127.0.0.1:8895/ ，页面显示“OPBP物理题库-AI组卷和批改工具”。终端保持运行；结束按Control+C。端口已占用可追加--port 8896。所有服务仅监听本机。
 
 无密钥先切到OPBP组卷，搜索P650-1或P160，加入选题篮，预览并导出学生卷和教师卷。检查题图完整、PDF可打开、两种工作区切换有选中状态。这一步不依赖AI账户。
 
@@ -77,7 +77,21 @@ Linux同理，在本机终端设置LAURAPHYSICS_OPEN_API_KEY后重启服务。�
 
 先做文字和图片连接测试。连接成功只说明请求联通，不表示批改准确率已经验证。401优先检查Key/地域/空间；403查模型授权；404查模型ID与接口；429查额度/限流。按控制台实际错误处理，不把云账户问题当成本地安装失败。
 
-## 4. 三份自写演示答卷怎么跑
+## 4. 完整测试试卷与单页规则小样怎么跑
+
+### 本次指定的三份完整测试试卷
+
+`examples/full-papers/`包含维护者指定的`Student-Paper 2.pdf`、`Student-Paper 3.pdf`、`Student-Paper 4.pdf`，均为原文件的完整副本，每份7页、6题、满分12分。三份为同一试卷的不同作答，保留空白姓名栏及原有页脚，原文件未改。先运行：
+
+```bash
+.venv/bin/python scripts/verify_demo_samples.py --full-papers
+```
+
+Windows改用`.venv\Scripts\python.exe`。应报告3份通过，每份按顺序识别P402、P403-1、P478、P087、P352、P456；这一步无需Key、不调用模型。再在“AI批改”上传三份整卷，核对题号并确认发送给自己配置的视觉模型，逐题复核后导出。完整操作、来源许可与SHA-256见[整卷说明](../examples/full-papers/README.md)。
+
+整卷未建立独立人工评分基准，不预填总得分；每份12分是满分。以下5/6仅适用于原有单页小样，不适用于这三份整卷。模型原始分数和教师修正后的分数分别记录。
+
+### 原有单页规则小样
 
 源码examples/marking-demo目录有3份单页PDF，均取自用户自写答卷，未携带姓名页。原始文件未修改；新副本清除元数据、链接并固化可见笔迹。先在不配置Key的情况下运行`.venv/bin/python scripts/verify_demo_samples.py`（Windows用`.venv\Scripts\python.exe`），应报告3份样例题号匹配通过，然后再进行真实AI体验。题目来源和CC许可见该目录SOURCES.md。
 
@@ -103,7 +117,7 @@ Windows：
 .venv\Scripts\python.exe scripts/run_tests.py --install --output test-results
 ```
 
-首次会下载测试依赖和Chromium。成功标志：test-results/test-result.json中ok为true，passed与本版实际报告一致，failures/errors/skipped为0。确认版本0.7.45；Git克隆部署可将报告gitCommit与本版本标签核对。源码ZIP不含.git，gitCommit可能为空，此时以发布包SHA-256及release-manifest.json逐文件校验为准。结果数会随新版本用例变化。无需Key，不调用真实付费模型；有模拟模型协议测试，不替代上述真实AI演示。
+首次会下载测试依赖和Chromium。成功标志：test-results/test-result.json中ok为true，passed与本版实际报告一致，failures/errors/skipped为0。确认版本0.7.46；Git克隆部署可将报告gitCommit与本版本标签核对。源码ZIP不含.git，gitCommit可能为空，此时以发布包SHA-256及release-manifest.json逐文件校验为准。结果数会随新版本用例变化。无需Key，不调用真实付费模型；有模拟模型协议测试，不替代上述真实AI演示。
 
 公开验收见本次Release关联的Actions与仓库[验收记录](VALIDATION.md)。本版结果以对应提交的报告为准，不把其他版本结果当作本次证据。工程验收不代表真实手写识别准确率。
 
@@ -123,6 +137,6 @@ Windows：
 
 ## 7. 今天提交时放什么
 
-代码仓库链接（或官方要求的源码附件）、最新作品介绍PDF、演示视频链接；新Release的推荐源码包已经包含本说明及演示样例，下载解压即可按文档运行。三份自写小样足够演示，无需把所有试卷和整个历史目录打包。若报名确认信有特定附件名称/入口/企业题目要求，以该指引为准。
+代码仓库链接（或官方要求的源码附件）、最新作品介绍PDF、演示视频链接；新Release的推荐源码包已经包含本说明及演示样例，下载解压即可按文档运行。下载包包含本次指定的三份完整自写试卷与原有三份单页小样，不需要额外打包私人历史目录。若报名确认信有特定附件名称/入口/企业题目要求，以该指引为准。
 
 源码包未替用户提交比赛、未替评委创建云账户，工程测试不执行真实模型批改。操作指南和人工预期已准备；真实效果仍以评委自己的运行与教师逐点核对为准。

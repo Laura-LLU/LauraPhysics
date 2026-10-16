@@ -28,3 +28,7 @@ CI在Ubuntu/macOS/Windows干净Python环境运行；不使用continue-on-error�
 三份自写PDF位于`examples/marking-demo/`，人工预期与来源许可分别在`EXPECTED_RESULTS.md`和`SOURCES.md`。运行`.venv/bin/python scripts/verify_demo_samples.py`（Windows使用`.venv\Scripts\python.exe`）检查文件SHA-256、元数据、逐题来源及实际上传识别；输出3份匹配结果，不调用外部模型。完整pytest包含三份真实PDF识别、未声明PDF检查及文件改动拒绝，并检查便携包包含样例和START_HERE。
 
 真实模型体验按`docs/BAILIAN_SETUP.md`与`docs/JUDGE_QUICKSTART.md`进行；`docs/MANUAL_ACCEPTANCE.csv`只提供操作和预期，实际结果由评测者填写，不预填通过。
+
+## 完整自写试卷
+
+本次指定的三份7页完整答卷位于`examples/full-papers/`。运行`.venv/bin/python scripts/verify_demo_samples.py --full-papers`（Windows使用`.venv\Scripts\python.exe`），检查三份SHA-256、来源与每份6个题号/12分满分匹配。pytest同时逐份走实际上传识别流程。文件与维护者提供的原件相同；整卷没有预先核定的人工得分，不套用单页小样的5/6。该检查不调用模型。

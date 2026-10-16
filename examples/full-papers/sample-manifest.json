@@ -1,0 +1,194 @@
+[
+  {
+    "file": "Student-Paper 2.pdf",
+    "sha256": "a59332c4600f85321a83043fca7f8fc2243a80b47363a3d7780c5bcda12b6a27",
+    "pages": 7,
+    "questionRefs": [
+      "P402",
+      "P403-1",
+      "P478",
+      "P087",
+      "P352",
+      "P456"
+    ],
+    "maximum": 12,
+    "modelAccuracyClaim": false,
+    "expectedSource": "No complete-paper score has been independently reviewed; evaluate original AI output separately from teacher corrections.",
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "handwrittenBy": "Laura-LLU (project maintainer; self-written demonstration)",
+    "sources": [
+      {
+        "reviewId": "P402",
+        "title": "Falling Mass on Rope",
+        "author": "Patrick Jilek-Rodriguez",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Momentum/Falling%20Mass%20on%20Rope/FallingMassOnRope.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P403-1",
+        "title": "Force Multipart True False Question",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Topic%20Outcome/forceMultipartTrueFalse/forceMultipartTrueFalse.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P478",
+        "title": "Position Vector and Momentum",
+        "author": "Tarek Alkabbani",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/What%20is%20r_mv/What%20is%20r_mv.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P087",
+        "title": "Bouncing Ball",
+        "author": "Jake Bobowski",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Impulse/Bouncing_Ball/Bouncing_Ball.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P352",
+        "title": "Car in Ditch",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Free%20Body%20Diagrams/Car%20in%20Ditch/car_in_ditch.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P456",
+        "title": "Force on a Mosquito",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/Force%20on%20a%20Mosquito/force_on_mosquito.md",
+        "license": "CC BY-NC-SA 4.0"
+      }
+    ],
+    "modifications": "Byte-for-byte copy of the maintainer-provided complete self-written PDF; blank identity fields and original footer retained; source file unchanged."
+  },
+  {
+    "file": "Student-Paper 3.pdf",
+    "sha256": "8bfe98c600ded8843bca657a143eef46047291dcc20af9e64091264c976d57bd",
+    "pages": 7,
+    "questionRefs": [
+      "P402",
+      "P403-1",
+      "P478",
+      "P087",
+      "P352",
+      "P456"
+    ],
+    "maximum": 12,
+    "modelAccuracyClaim": false,
+    "expectedSource": "No complete-paper score has been independently reviewed; evaluate original AI output separately from teacher corrections.",
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "handwrittenBy": "Laura-LLU (project maintainer; self-written demonstration)",
+    "sources": [
+      {
+        "reviewId": "P402",
+        "title": "Falling Mass on Rope",
+        "author": "Patrick Jilek-Rodriguez",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Momentum/Falling%20Mass%20on%20Rope/FallingMassOnRope.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P403-1",
+        "title": "Force Multipart True False Question",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Topic%20Outcome/forceMultipartTrueFalse/forceMultipartTrueFalse.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P478",
+        "title": "Position Vector and Momentum",
+        "author": "Tarek Alkabbani",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/What%20is%20r_mv/What%20is%20r_mv.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P087",
+        "title": "Bouncing Ball",
+        "author": "Jake Bobowski",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Impulse/Bouncing_Ball/Bouncing_Ball.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P352",
+        "title": "Car in Ditch",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Free%20Body%20Diagrams/Car%20in%20Ditch/car_in_ditch.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P456",
+        "title": "Force on a Mosquito",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/Force%20on%20a%20Mosquito/force_on_mosquito.md",
+        "license": "CC BY-NC-SA 4.0"
+      }
+    ],
+    "modifications": "Byte-for-byte copy of the maintainer-provided complete self-written PDF; blank identity fields and original footer retained; source file unchanged."
+  },
+  {
+    "file": "Student-Paper 4.pdf",
+    "sha256": "81e7b7373a3e69d46a6456ea4e69384fff63c1c87f2fbd3e0faa8afa35681f7e",
+    "pages": 7,
+    "questionRefs": [
+      "P402",
+      "P403-1",
+      "P478",
+      "P087",
+      "P352",
+      "P456"
+    ],
+    "maximum": 12,
+    "modelAccuracyClaim": false,
+    "expectedSource": "No complete-paper score has been independently reviewed; evaluate original AI output separately from teacher corrections.",
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "handwrittenBy": "Laura-LLU (project maintainer; self-written demonstration)",
+    "sources": [
+      {
+        "reviewId": "P402",
+        "title": "Falling Mass on Rope",
+        "author": "Patrick Jilek-Rodriguez",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Momentum/Falling%20Mass%20on%20Rope/FallingMassOnRope.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P403-1",
+        "title": "Force Multipart True False Question",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Topic%20Outcome/forceMultipartTrueFalse/forceMultipartTrueFalse.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P478",
+        "title": "Position Vector and Momentum",
+        "author": "Tarek Alkabbani",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/What%20is%20r_mv/What%20is%20r_mv.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P087",
+        "title": "Bouncing Ball",
+        "author": "Jake Bobowski",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Impulse/Bouncing_Ball/Bouncing_Ball.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P352",
+        "title": "Car in Ditch",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Free%20Body%20Diagrams/Car%20in%20Ditch/car_in_ditch.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P456",
+        "title": "Force on a Mosquito",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Topic%20Outcome/Force%20on%20a%20Mosquito/force_on_mosquito.md",
+        "license": "CC BY-NC-SA 4.0"
+      }
+    ],
+    "modifications": "Byte-for-byte copy of the maintainer-provided complete self-written PDF; blank identity fields and original footer retained; source file unchanged."
+  }
+]

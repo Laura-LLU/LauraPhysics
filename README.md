@@ -3,17 +3,17 @@
 [![CI](https://github.com/Laura-LLU/OPBP-Bank/actions/workflows/ci.yml/badge.svg)](https://github.com/Laura-LLU/OPBP-Bank/actions/workflows/ci.yml)
 [![Code: AGPL-3.0](https://img.shields.io/badge/code-AGPL--3.0-blue.svg)](LICENSE)
 
-**v0.7.45** · 本地运行、教师复核、独立部署。面向物理教师，从 OPBP 原题组卷，上传作答，检查 AI 逐点评分证据，修改确认后导出原卷批注 PDF。
+**v0.7.46** · 本地运行、教师复核、独立部署。面向物理教师，从 OPBP 原题组卷，上传作答，检查 AI 逐点评分证据，修改确认后导出原卷批注 PDF。
 
 上海开源软件应用创新大赛参赛项目的公开源码。900 道可选题，人工与 AI 使用同一题池；不是 Cambridge 官方产品、官方真题或官方 Mark Scheme。
 
-当前代码以 `main` 和 [v0.7.45 Release](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.45) 为准；题图仍从安装器锁定的 v0.7.41 资源包下载，资源版本与程序版本分开。
+当前代码以 `main` 和 [v0.7.46 Release](https://github.com/Laura-LLU/OPBP-Bank/releases/tag/v0.7.46) 为准；题图仍从安装器锁定的 v0.7.41 资源包下载，资源版本与程序版本分开。
 
 项目统一名称为 **OPBP Bank**；macOS 应用为 `OPBP Bank.app`，GitHub 仓库为 `Laura-LLU/OPBP-Bank`。既有本地数据目录、环境变量与钥匙串标识保留兼容，改名无需重配模型或迁移历史。
 
 ## 评委部署与演示入口
 
-**[从 START_HERE.md 开始](START_HERE.md)** · [完整部署步骤](docs/JUDGE_QUICKSTART.md) · [百炼配置教程](docs/BAILIAN_SETUP.md) · [三份自写PDF样例](examples/marking-demo/) · [人工预期结果](examples/marking-demo/EXPECTED_RESULTS.md) · [10项人工验收表](docs/MANUAL_ACCEPTANCE.csv)
+**[从 START_HERE.md 开始](START_HERE.md)** · [完整部署步骤](docs/JUDGE_QUICKSTART.md) · [百炼配置教程](docs/BAILIAN_SETUP.md) · [三份完整测试试卷](examples/full-papers/) · [单页规则小样](examples/marking-demo/) · [人工预期结果](examples/marking-demo/EXPECTED_RESULTS.md) · [10项人工验收表](docs/MANUAL_ACCEPTANCE.csv)
 
 源码包已包含上述材料；首次安装仍需下载题图及依赖。可先无模型人工组卷和检查样例，真实AI功能由部署者配置自己的模型账户。样例题号检查：`.venv/bin/python scripts/verify_demo_samples.py`（Windows使用`.venv\Scripts\python.exe`）。
 

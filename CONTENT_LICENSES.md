@@ -16,3 +16,7 @@ OPBP 题干、原图、裁切/拆分图片及包含原题的排版内容**不统
 ## 公开自写演示答卷
 
 `examples/marking-demo/`中的3份PDF由维护者本人填写并授权公开，不是真实学生记录。Demo-01、Demo-03包含CC BY-NC-SA 4.0题目，演示选页及笔迹按该许可提供；Demo-02按CC BY 4.0提供。代码AGPL不覆盖这些内容。逐题作者、原始来源、许可链接、修改说明和文件SHA-256见该目录`SOURCES.md`与`sample-manifest.json`；人工预期结果不等于模型实测输出。
+
+## 三份完整自写测试答卷
+
+`examples/full-papers/`中的Student-Paper 2、3、4是维护者指定公开的本人填写答卷，保留原文件完整内容与空白身份栏；不是学生记录。六道原题及自写笔迹按CC BY-NC-SA 4.0提供，代码AGPL不覆盖试卷。逐题作者、原始来源、许可链接和各PDF的SHA-256见该目录README.md与sample-manifest.json；原文件未修改。

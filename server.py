@@ -15,7 +15,7 @@ BY_ID=core.QUESTION_BY_ID
 GENERATED=Path(os.environ.get('LAURAPHYSICS_OPEN_OUTPUT',str(Path.home()/'codex/PhysicsBank/开源版生成试卷'))).expanduser().resolve()
 PREVIEWS=GENERATED/'.previews'
 LOCK=threading.RLock()
-VERSION='0.7.45'
+VERSION='0.7.46'
 
 def exported_file(relative):
  target=(GENERATED/relative).resolve()
