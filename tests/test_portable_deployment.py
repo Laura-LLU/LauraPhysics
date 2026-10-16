@@ -20,6 +20,9 @@ def miniature_project(tmp_path,monkeypatch):
     (root/'data').mkdir();(root/'data/questions.json').write_text('{"metadata":{"appVersion":"0.0.1"}}')
     (root/'vendor').mkdir();(root/'vendor/macos-only.so').write_bytes(b'arm64')
     (root/'scripts').mkdir();(root/'scripts/ai-settings.json').write_text('{"private":"not for release"}')
+    (root/'examples/marking-demo').mkdir(parents=True)
+    (root/'examples/marking-demo/demo.pdf').write_bytes(b'%PDF-test-public-demo')
+    (root/'START_HERE.md').write_text('Evaluator start here', encoding='utf-8')
     monkeypatch.setattr(release,'ROOT',root)
     return root
 
@@ -31,6 +34,8 @@ def test_portable_archive_contains_new_modules_current_version_and_verified_mani
     with zipfile.ZipFile(result['archive']) as archive:
         names=archive.namelist();assert 'OPBP-Bank/question_pool.py' in names
         assert 'OPBP-Bank/requirements-test.txt' in names
+        assert 'OPBP-Bank/START_HERE.md' in names
+        assert 'OPBP-Bank/examples/marking-demo/demo.pdf' in names
         assert not any('/vendor/' in name or 'ai-settings.json' in name for name in names)
         manifest=json.loads(archive.read('OPBP-Bank/release-manifest.json'))
         assert manifest['portable'] and manifest['version']=='9.8.7'

@@ -1,0 +1,95 @@
+[
+  {
+    "file": "Demo-01-Multiple-Choice-AB.pdf",
+    "sha256": "926e77d76518b71358b617a8036f63dafea8a66d88c3f762563e6420faa198c0",
+    "pages": 1,
+    "questionRefs": [
+      "P650-1"
+    ],
+    "expectedQuestionScores": {
+      "P650-1": 1
+    },
+    "expectedTotal": 1,
+    "maximum": 1,
+    "expectedSource": "human-reviewed demonstration expectation; not measured model output",
+    "modelAccuracyClaim": false,
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "handwrittenBy": "Laura-LLU (project maintainer; self-written demonstration)",
+    "sources": [
+      {
+        "reviewId": "P650-1",
+        "title": "Resistor Circuit Reduction",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/021.Circuits/Resistors/Resistor%20Circuit%20Reduction/Resistor_circuit_reduction.md",
+        "license": "CC BY-NC-SA 4.0"
+      }
+    ],
+    "modifications": "Excerpted one page from a self-written demo response; removed identity pages and metadata; flattened visible ink; updated project footer. Original source file unchanged."
+  },
+  {
+    "file": "Demo-02-Three-Significant-Figures.pdf",
+    "sha256": "71ff735ab34857b1b282ad2cd6705a0fe0a7d7cc5abfedd4b0075085a5cc4914",
+    "pages": 1,
+    "questionRefs": [
+      "P160"
+    ],
+    "expectedQuestionScores": {
+      "P160": 3
+    },
+    "expectedTotal": 3,
+    "maximum": 3,
+    "expectedSource": "human-reviewed demonstration expectation; not measured model output",
+    "modelAccuracyClaim": false,
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "handwrittenBy": "Laura-LLU (project maintainer; self-written demonstration)",
+    "sources": [
+      {
+        "reviewId": "P160",
+        "title": "Electric potential of parallel plates",
+        "author": "Jake Bobowksi",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/018.Electrostatics/Electric%20Potential/Electric%20potential%20of%20parallel%20plates/Electric%20potential%20of%20parallel%20plates.md",
+        "license": "CC BY 4.0"
+      }
+    ],
+    "modifications": "Excerpted one page from a self-written demo response; removed identity pages and metadata; flattened visible ink; updated project footer. Original source file unchanged."
+  },
+  {
+    "file": "Demo-03-Correct-and-Incorrect-Choices.pdf",
+    "sha256": "0149a33e12622cdb0f16681c2140f1aaf286b4dc59d57f929ba4c698eefcea95",
+    "pages": 1,
+    "questionRefs": [
+      "P402",
+      "P403-1"
+    ],
+    "expectedQuestionScores": {
+      "P402": 1,
+      "P403-1": 0
+    },
+    "expectedTotal": 1,
+    "maximum": 2,
+    "expectedSource": "human-reviewed demonstration expectation; not measured model output",
+    "modelAccuracyClaim": false,
+    "license": "CC BY-NC-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "handwrittenBy": "Laura-LLU (project maintainer; self-written demonstration)",
+    "sources": [
+      {
+        "reviewId": "P402",
+        "title": "Falling Mass on Rope",
+        "author": "Patrick Jilek-Rodriguez",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/007.Momentum%20and%20Impulse/Momentum/Falling%20Mass%20on%20Rope/FallingMassOnRope.md",
+        "license": "CC BY-NC-SA 4.0"
+      },
+      {
+        "reviewId": "P403-1",
+        "title": "Force Multipart True False Question",
+        "author": "John Hopkinson",
+        "sourceUrl": "https://github.com/open-resources/physics_bank/blob/59de2e82f4fa6fc1ca24c15a088f07428fd4480e/content/public/006.Force/Topic%20Outcome/forceMultipartTrueFalse/forceMultipartTrueFalse.md",
+        "license": "CC BY-NC-SA 4.0"
+      }
+    ],
+    "modifications": "Excerpted one page from a self-written demo response; removed identity pages and metadata; flattened visible ink; updated project footer. Original source file unchanged."
+  }
+]

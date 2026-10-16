@@ -22,3 +22,9 @@
 持续补充超时、429、坏JSON、损坏/加密PDF、手机照片、磁盘失败、异常退出、线程竞争、长批次和不同字体。性能比较在同样环境/输入下进行。
 
 CI在Ubuntu/macOS/Windows干净Python环境运行；不使用continue-on-error掩盖失败，也不替代第二台实体Mac验收。测试结果包含日志、JUnit、JSON、覆盖率和合法匿名生成证据。
+
+## 公开演示输入检查
+
+三份自写PDF位于`examples/marking-demo/`，人工预期与来源许可分别在`EXPECTED_RESULTS.md`和`SOURCES.md`。运行`.venv/bin/python scripts/verify_demo_samples.py`（Windows使用`.venv\Scripts\python.exe`）检查文件SHA-256、元数据、逐题来源及实际上传识别；输出3份匹配结果，不调用外部模型。完整pytest包含三份真实PDF识别、未声明PDF检查及文件改动拒绝，并检查便携包包含样例和START_HERE。
+
+真实模型体验按`docs/BAILIAN_SETUP.md`与`docs/JUDGE_QUICKSTART.md`进行；`docs/MANUAL_ACCEPTANCE.csv`只提供操作和预期，实际结果由评测者填写，不预填通过。

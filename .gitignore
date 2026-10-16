@@ -25,3 +25,8 @@ checkpoint.json
 grading.json
 *.pdf
 *.zip
+
+# Only the reviewed, explicitly public self-written demo PDFs.
+!examples/marking-demo/Demo-01-Multiple-Choice-AB.pdf
+!examples/marking-demo/Demo-02-Three-Significant-Figures.pdf
+!examples/marking-demo/Demo-03-Correct-and-Incorrect-Choices.pdf
