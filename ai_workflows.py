@@ -1,6 +1,7 @@
 """Source-bound OPBP planning, asynchronous marking and teacher-approved export."""
 from __future__ import annotations
 
+import ast
 import base64
 import hashlib
 import html
@@ -14,6 +15,7 @@ import time
 import uuid
 import zipfile
 from pathlib import Path
+from fractions import Fraction
 
 import core_server as core
 from PIL import Image, ImageOps
@@ -22,7 +24,7 @@ JOB_LOCK = threading.RLock()
 RUNNING: set[str] = set()
 MAX_BYTES = 20 * 1024 * 1024
 MAX_PAGES = 30
-ANNOTATION_VERSION = 'answer-adjacent-rubric-v10'
+ANNOTATION_VERSION = 'question-aligned-rubric-v11'
 VISION_INPUT_VERSION = 'answer-crop-v1'
 
 
@@ -662,6 +664,11 @@ def enforce_choice_item(question, item, require_position=False):
         if not explicit and point.get('awarded') is None and str(point.get('reason', '')).startswith('模型结果不完整'):
             continue  # Provider failure is not evidence that a student left it blank.
         position = point.get('position') or {}
+        if explicit and require_position and point.get('choiceLocationNeedsReview') and not position:
+            # A cross-question coordinate is a localisation failure, not proof
+            # of a blank answer. Do not manufacture either credit or a blank.
+            point.update(studentAnswer=', '.join(selected), awarded=None, reason='作答位置跨题，请核对原卷。')
+            continue
         # A score/header anchor is for drawing a mark, NOT proof of a choice.
         unsupported_anchor = position.get('source', '').startswith('unanswered-')
         if explicit and require_position and (not position or unsupported_anchor):
@@ -790,9 +797,13 @@ def normalize_grade(question, response, page_indices, page_count):
         if not reference and awarded is False and (
             prompt_unit_numeric_answer_is_valid(question, rubric, evidence)
             or numeric_precision_rejection_is_invalid(rubric, evidence, reason)
+            or symmetric_graph_working_is_valid(question, rubric, evidence)
         ):
             awarded = True
             reason = ''
+        if not reference and awarded is True and calculation_precision_problem(question, rubric, evidence):
+            awarded = False
+            reason = '有效数字应保留2位或3位。'
         # Evidence is mandatory for earned marks; an unreadable answer is never treated as blank.
         if awarded is True and not evidence.strip():
             awarded = None; reason = '缺少得分证据，请教师复核。'
@@ -827,10 +838,17 @@ def normalize_grade(question, response, page_indices, page_count):
 def _last_number(text):
     """Read the last ordinary/scientific-notation value from a rubric or answer."""
     value = str(text or '').replace('−', '-').replace('–', '-')
+    value = value.replace('\\times', '×').replace('\\cdot', '×').replace('**', '^')
+    value = value.replace('{', '').replace('}', '')
+    value = re.sub(r'\*\s*(?=10\b)', '×', value)
+    value = re.sub(r'10\s*\^\s*\(\s*([-+]?\d+)\s*\)', r'10^\1', value)
     value = re.sub(r'(?<=\d),(?=\d)', '.', value)
     superscripts = str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺', '0123456789-+')
     value = re.sub(r'10([⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+)', lambda match: '10^' + match.group(1).translate(superscripts), value)
-    pattern = re.compile(r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:(?:\s*[×x]\s*10\s*\^?\s*[-+]?\d+)|(?:[eE][-+]?\d+))?')
+    # Unit powers (s^-1, m^2) and precision notes are not answer values.
+    value = re.sub(r'(?<=[A-Za-z])\s*(?:\^|\*\*)\s*[-+]?\d+', '', value)
+    value = re.sub(r'[（(][^()（）]*(?:有效|significant)[^()（）]*[)）]', '', value, flags=re.I)
+    pattern = re.compile(r'(?<![A-Za-z0-9_^/.])[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:(?:\s*[×x]\s*10\s*\^?\s*[-+]?\d+)|(?:[eE][-+]?\d+))?')
     matches = list(pattern.finditer(value))
     if not matches:
         return None, ''
@@ -856,11 +874,97 @@ def _rounded_significant(value, figures=2):
     return round(value, places)
 
 
+def _acceptable_precision(value, mantissa, expected, text, accepted_figures=(2, 3)):
+    if _significant_figures(mantissa) in accepted_figures:
+        return True
+    # A canonical whole-number reference such as 20 Hz is displayed without
+    # a decimal marker. Do not force scientific notation solely to disambiguate
+    # its trailing zero. Explicit 1e4 / 1 x 10^4 still states one s.f.
+    scientific = re.search(r'(?:[×x]\s*10|\d[eE][+-]?\d)', str(text or ''))
+    return bool(not scientific and '.' not in mantissa and mantissa.endswith('0')
+                and _significant_figures(mantissa) == 1 and expected is not None
+                and value == expected and len(mantissa.lstrip('+-')) >= 2)
+
+
+def calculation_precision_problem(question, rubric, evidence):
+    """Enforce 2/3 s.f. on numeric final answers, not methods or exact/symbolic parts."""
+    if rubric.get('category') != 'A1' or '结果正确' not in str(rubric.get('point') or ''):
+        return False
+    part = next((part for part in question.get('scoringParts', [])
+                 if str(part.get('part')) == str(rubric.get('part'))), None)
+    if not part or part.get('kind') != '计算' or part.get('sourceResponseType') == 'symbolic-input':
+        return False
+    if re.search(r'取整数|精确值|exact\s+(?:integer|value)', str(part.get('answer') or ''), re.I):
+        return False
+    value, mantissa = _last_number(evidence)
+    expected, _ = _last_number(part.get('answer'))
+    if value == expected == 0:
+        return False  # Exact cancellation has no meaningful 2/3-s.f. distinction.
+    return value is not None and math.isfinite(value) and not _acceptable_precision(value, mantissa, expected, evidence)
+
+
+def symmetric_graph_working_is_valid(question, rubric, evidence):
+    """Verify explicit half-area x2 working for P456; never infer work from a final value.
+
+    This is a narrow, source-bound arithmetic check, not arbitrary expression
+    execution. Other graphs/methods remain the visual model's responsibility.
+    """
+    if question.get('reviewId') != 'P456' or rubric.get('id') != 'P456.1.2':
+        return False
+    text = str(evidence or '').replace('−', '-').replace('×', '*').replace('÷', '/')
+    superscripts = str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺', '0123456789-+')
+    text = re.sub(r'10([⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+)', lambda m: '10**(' + m[1].translate(superscripts) + ')', text)
+    text = text.replace('^', '**').replace('[', '(').replace(']', ')')
+    text = re.sub(r'(?<=\d)\s*\(', '*(', text)
+    text = re.sub(r'(?<=\))\s*(?=[\d(])', '*', text)
+
+    def evaluate(node):
+        if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+            if not math.isfinite(node.value) or abs(node.value) > 1000000:
+                raise ValueError('Number outside graph bounds')
+            return Fraction(str(node.value))
+        if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+            return evaluate(node.operand) * (-1 if isinstance(node.op, ast.USub) else 1)
+        if isinstance(node, ast.BinOp):
+            a, b = evaluate(node.left), evaluate(node.right)
+            if isinstance(node.op, ast.Add): return a + b
+            if isinstance(node.op, ast.Mult): return a * b
+            if isinstance(node.op, ast.Div): return a / b
+            if isinstance(node.op, ast.Pow) and b.denominator == 1 and abs(b) <= 9:
+                if max(a.numerator.bit_length(), a.denominator.bit_length()) * max(1, abs(int(b))) > 4096:
+                    raise ValueError('Graph expression too large')
+                return a ** int(b)
+        raise ValueError('Unsupported graph arithmetic')
+
+    def factors(node):
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Mult):
+            return factors(node.left) + factors(node.right)
+        return [node]
+
+    for chunk in re.findall(r'[\d.()+*/\-\s]+', text):
+        chunk = chunk.strip()
+        if '+' not in chunk or len(chunk) > 250:
+            continue
+        try:
+            tree = ast.parse(chunk, mode='eval').body
+            if len(list(ast.walk(tree))) > 100 or evaluate(tree) != Fraction(12, 1000):
+                continue
+            for term in factors(tree):
+                if isinstance(term, ast.BinOp) and isinstance(term.op, ast.Add):
+                    if sorted([evaluate(term.left), evaluate(term.right)]) == [1, 5]:
+                        return True  # Explicit half-area 1+5, doubled and converted to seconds.
+        except (ValueError, SyntaxError, ZeroDivisionError, OverflowError, RecursionError):
+            continue
+    return False
+
+
 def numeric_result_is_equivalent(expected_text, student_text, accepted_figures=(2, 3)):
     """Compare values after notation normalization; scientific notation is optional."""
     expected, _ = _last_number(expected_text)
     student, mantissa = _last_number(student_text)
-    if expected is None or student is None or _significant_figures(mantissa) not in accepted_figures:
+    if expected is None or student is None or not math.isfinite(expected) or not math.isfinite(student):
+        return False
+    if not _acceptable_precision(student, mantissa, expected, student_text, accepted_figures):
         return False
     figures = min(accepted_figures)
     return math.isclose(_rounded_significant(student, figures), _rounded_significant(expected, figures),
@@ -941,7 +1045,9 @@ def summary_pdf(draft, destination, approved=False):
 
 def _question_region(page, source):
     """Return the printed question region in top-origin PDF coordinates."""
-    matches = page.search_for(str(source or ''))
+    # Exact IDs prevent P403 from silently anchoring to P403-1.
+    matches = [page.rect.__class__(word[:4]) for word in page.get_text('words')
+               if str(word[4]).strip() == str(source or '')]
     if not matches:
         return None
     header = min(matches, key=lambda rect: (rect.y0, rect.x0))
@@ -1031,6 +1137,24 @@ def resolve_annotation_positions(folder, draft):
         for item in draft.get('items', []):
             pages = [int(value) for value in item.get('pageNumbers', []) if str(value).isdigit()]
             question = core.QUESTION_BY_ID.get(item.get('id'))
+            # Provider boxes are observations, not trusted question ownership.
+            for point in item.get('markPoints', []):
+                position = point.get('position') or {}
+                number, box = position.get('page'), position.get('box')
+                if not position:
+                    continue
+                valid = (type(number) is int and number in pages and 1 <= number <= len(doc)
+                         and isinstance(box, list) and len(box) == 4
+                         and all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1 for v in box)
+                         and box[0] < box[2] and box[1] < box[3])
+                if valid:
+                    region = _question_region(doc[number - 1], item.get('source'))
+                    if region:
+                        valid = region[0] <= box[1] * doc[number - 1].rect.height and box[3] * doc[number - 1].rect.height <= region[1]
+                if not valid:
+                    if question and question.get('type') == 'MCQ':
+                        point['choiceLocationNeedsReview'] = True
+                    point['position'] = None
             fallback = None
             for page_number in pages:
                 if not 1 <= page_number <= len(doc):
@@ -1071,6 +1195,8 @@ def resolve_annotation_positions(folder, draft):
             for point in item.get('markPoints', []):
                 if not point.get('position') and fallback:
                     point['position'] = dict(fallback)
+                    if fallback['source'].startswith(('student-choice-', 'teacher-confirmed-')):
+                        point.pop('choiceLocationNeedsReview', None)
         draft['placementReviewCount'] = sum(
             any(point_needs_position(item, point) and not point.get('position')
                 for point in item.get('markPoints', []))
@@ -1104,8 +1230,15 @@ def recheck_choice_draft(folder, draft):
                         point['position'] = None
                     if previous['studentAnswer'] != point['studentAnswer']:
                         point['policyPrevious'] = previous
-            elif point.get('awarded') is False and numeric_precision_rejection_is_invalid(point, point.get('evidence'), point.get('reason')):
-                point.update(awarded=True, reason='', policyPrevious=previous)
+            elif question:
+                if point.get('awarded') is False and (
+                    numeric_precision_rejection_is_invalid(point, point.get('evidence'), point.get('reason'))
+                    or prompt_unit_numeric_answer_is_valid(question, point, point.get('evidence'))
+                    or symmetric_graph_working_is_valid(question, point, point.get('evidence'))
+                ):
+                    point.update(awarded=True, reason='', policyPrevious=previous)
+                if point.get('awarded') is True and calculation_precision_problem(question, point, point.get('evidence')):
+                    point.update(awarded=False, reason='有效数字应保留2位或3位。', policyPrevious=previous)
         item['score'] = sum(p['marks'] for p in item.get('markPoints', []) if p.get('awarded') is True)
     resolve_annotation_positions(folder, draft)
     for item in draft.get('items', []):
@@ -1119,7 +1252,7 @@ def recheck_choice_draft(folder, draft):
         for item in draft.get('items', [])
     )
     resolve_annotation_positions(folder, draft)
-    draft['choicePolicyVersion'] = 'explicit-multiple-choice-and-precision-v2'
+    draft['choicePolicyVersion'] = 'explicit-choice-precision-and-symmetry-v3'
     return draft
 
 
@@ -1134,39 +1267,27 @@ def _draw_mark(page, x, y, awarded):
     return colour
 
 
-def _draw_item_marks(page, item, points):
-    boxes = [point['position']['box'] for point in points]
-    anchor_x = sum((box[0] + box[2]) * .5 for box in boxes) / len(boxes) * page.rect.width
-    anchor_y = sum((box[1] + box[3]) * .5 for box in boxes) / len(boxes) * page.rect.height
-    question = core.QUESTION_BY_ID.get(item.get('id'))
-    is_choice = bool(question and question.get('type') == 'MCQ')
-    mark_gap = 29
-    score_width = 48
-    row_width = len(points) * mark_gap + score_width
-    if is_choice:
-        if all(point.get('position', {}).get('source') in {
-                'unanswered-question-mark', 'teacher-confirmed-question-mark'} for point in points):
-            left = max(18, min(page.rect.width - row_width - 12,
-                               min(box[0] for box in boxes) * page.rect.width - row_width - 10))
-        else:
-            left = max(18, min(page.rect.width - row_width - 12,
-                               max(box[2] for box in boxes) * page.rect.width + 13))
-        y = anchor_y
-    else:
-        left = max(18, page.rect.width - row_width - 17)
-        y = min(page.rect.height - 55, max(55, anchor_y))
-        background = page.rect.__class__(left - 10, y - 19, page.rect.width - 10, y + 21)
-        page.draw_rect(background, color=None, fill=(1, 1, 1), fill_opacity=.9, overlay=True)
+def _draw_item_marks(page, item, points, left, y):
+    """Marks live in an added question-side gutter, never on top of student ink."""
+    import pymupdf as fitz
+    # A source XObject may already contain /helv. Use a distinct direct-page
+    # resource so Poppler/Safari do not lose gutter labels after PDF import.
+    page.insert_font(fontname='lpmarks', fontbuffer=fitz.Font('helv').buffer)
     for index, point in enumerate(points):
-        x = left + 10 + index * mark_gap
-        colour = _draw_mark(page, x, y, bool(point.get('awarded')))
-        page.insert_text((x - 8, y + 18), str(point.get('category') or '')[:6], fontsize=6.4,
-                         fontname='helv', color=colour, overlay=True)
-    score = sum(point.get('awarded') is True for point in points)
-    maximum = len(points)
+        x, mark_y = left + 17, y + index * 25
+        if point.get('awarded') is None:
+            colour = (.76, .48, .03)
+            page.draw_circle((x, mark_y), 7, color=colour, width=1.5, overlay=True)
+            page.insert_text((x - 3, mark_y + 3), '?', fontsize=9, fontname='lpmarks', color=colour, overlay=True)
+        else:
+            colour = _draw_mark(page, x, mark_y, point['awarded'])
+        page.insert_text((x + 16, mark_y + 3), str(point.get('category') or '')[:6], fontsize=9,
+                         fontname='lpmarks', color=colour, overlay=True)
+    score = sum(point.get('marks', 1) for point in points if point.get('awarded') is True)
+    maximum = sum(point.get('marks', 1) for point in points)
     score_colour = (0.08, .60, .36) if score == maximum else (.84, .10, .22) if score == 0 else (.82, .52, .05)
-    page.insert_text((left + len(points) * mark_gap + 2, y + 3), f'{score}/[{maximum}]', fontsize=9,
-                     fontname='helv', color=score_colour, overlay=True)
+    page.insert_text((left + 9, y + len(points) * 25), f'{score}/[{maximum}]', fontsize=10,
+                     fontname='lpmarks', color=score_colour, overlay=True)
 
 
 def _criterion_summary(text):
@@ -1183,19 +1304,23 @@ def _criterion_summary(text):
     return text.rstrip('。')
 
 
-def _panel_font(page):
-    """Prefer a readable proportional CJK font for the teacher rubric panel."""
-    import pymupdf as fitz
+def _panel_font_path():
     candidates = (
         '/System/Library/Fonts/Hiragino Sans GB.ttc',
         'C:/Windows/Fonts/msyh.ttc',
         '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
         '/usr/share/fonts/truetype/wqy/wqy-microhei.ttc',
     )
-    for candidate in candidates:
-        if Path(candidate).is_file():
-            page.insert_font(fontname='rubric', fontfile=candidate)
-            return 'rubric', fitz.Font(fontfile=candidate)
+    return next((candidate for candidate in candidates if Path(candidate).is_file()), None)
+
+
+def _panel_font(page):
+    """Prefer a readable proportional CJK font for the teacher rubric panel."""
+    import pymupdf as fitz
+    candidate = _panel_font_path()
+    if candidate:
+        page.insert_font(fontname='rubric', fontfile=candidate)
+        return 'rubric', fitz.Font(fontfile=candidate)
     page.insert_font(fontname='china-s')
     return 'china-s', fitz.Font(fontname='china-s')
 
@@ -1221,7 +1346,41 @@ def _wrap_panel_text(text, maximum_width, font, font_size):
     return lines or ['']
 
 
-def _draw_rubric_panel(page, items, draft, panel_left, panel_width):
+def _rubric_layout(original_page, items, panel_width):
+    """Measure before drawing: align to question headers, reserve space, never shrink/clip."""
+    import pymupdf as fitz
+    candidate = _panel_font_path()
+    font = fitz.Font(fontfile=candidate) if candidate else fitz.Font(fontname='china-s')
+    font_size, leading = 11.8, 11.8 * 1.42
+    text_width = panel_width - 106
+    groups = []
+    for item, points in items:
+        region = _question_region(original_page, item.get('source'))
+        question_top = region[0] + 8 if region else None
+        rows = []
+        for point in points:
+            state = '得分' if point.get('awarded') is True else '失分' if point.get('awarded') is False else '待复核'
+            criterion = f"本题正确选项：{item.get('correctAnswer')}" if item.get('correctAnswer') else _criterion_summary(point.get('point'))
+            criterion_lines = _wrap_panel_text('准则：' + criterion, text_width, font, font_size)
+            reason = str(point.get('reason') or '').strip()
+            reason_lines = (_wrap_panel_text('失分原因：' + reason, text_width, font, font_size - .5)
+                            if point.get('awarded') is False and reason else [])
+            height = 48 + len(criterion_lines) * leading
+            if reason_lines:
+                height += 7 + len(reason_lines) * (leading - .7)
+            rows.append((point, state, criterion_lines, reason_lines, height))
+        groups.append(dict(item=item, points=points, rows=rows, questionTop=question_top))
+    groups.sort(key=lambda group: (group['questionTop'] is None,
+                                  group['questionTop'] or 0, group['item'].get('order', 0)))
+    bottom = 30
+    for group in groups:
+        group['panelTop'] = max(38, group['questionTop'] or 78, bottom + 8)
+        group['panelBottom'] = group['panelTop'] + 42 + sum(row[-1] + 9 for row in group['rows'])
+        bottom = group['panelBottom']
+    return groups, max(original_page.rect.height, bottom + 40)
+
+
+def _draw_rubric_panel(page, groups, draft, panel_left, panel_width):
     """Put the usable marking criteria beside the original answer, on the same PDF page."""
     import pymupdf as fitz
     font_name, panel_font = _panel_font(page)
@@ -1230,64 +1389,32 @@ def _draw_rubric_panel(page, items, draft, panel_left, panel_width):
     page.draw_rect(fitz.Rect(panel_left, 0, panel_left + panel_width, page.rect.height),
                    color=(.82, .85, .88), fill=(.965, .975, .985), width=.7, overlay=True)
     x0, x1 = panel_left + 18, panel_left + panel_width - 18
-    page.insert_text((x0, 31), '评分准则', fontsize=18, fontname=font_name, color=navy, overlay=True)
-    page.insert_text((x0, 51), f"{draft.get('totalScore', 0)} / {draft.get('totalMaximum', 0)}  ·  教师复核版",
+    page.insert_text((x0, 22), '评分准则', fontsize=16, fontname=font_name, color=navy, overlay=True)
+    page.insert_text((x0 + 99, 21), f"{draft.get('totalScore', 0)} / {draft.get('totalMaximum', 0)}  ·  教师复核版",
                      fontsize=10.5, fontname=font_name, color=muted, overlay=True)
-    page.draw_line((x0, 63), (x1, 63), color=(.72, .76, .80), width=.7, overlay=True)
-    if not items:
+    page.draw_line((x0, 32), (x1, 32), color=(.72, .76, .80), width=.7, overlay=True)
+    if not groups:
         page.insert_textbox(fitz.Rect(x0, 82, x1, 142), '本页无评分项\n原卷内容保持不变',
                             fontsize=11, fontname=font_name, color=muted, lineheight=1.5, overlay=True)
         return
 
-    groups = []
-    for item, points in items:
-        rows = []
-        for point in points:
-            state = '得分' if point.get('awarded') is True else '失分' if point.get('awarded') is False else '待复核'
-            criterion = f"本题正确选项：{item.get('correctAnswer')}" if item.get('correctAnswer') else _criterion_summary(point.get('point'))
-            rows.append((point, state, criterion, str(point.get('reason') or '').strip()))
-        groups.append((item, points, rows))
-
     font_size = 11.8
-    while True:
-        text_width = x1 - (x0 + 58) - 12
-        leading = font_size * 1.42
-        height = 0
-        for _item, _points, rows in groups:
-            height += 38
-            for point, _state, criterion, reason in rows:
-                criterion_lines = _wrap_panel_text('准则：' + criterion, text_width, panel_font, font_size)
-                reason_lines = (_wrap_panel_text('失分原因：' + reason, text_width, panel_font, max(9.0, font_size - .5))
-                                if point.get('awarded') is False and reason else [])
-                height += 36 + len(criterion_lines) * leading
-                if reason_lines:
-                    height += 7 + len(reason_lines) * max(12.8, leading - .7)
-                height += 21
-        if height <= page.rect.height - 112 or font_size <= 9.4:
-            break
-        font_size -= .35
-
-    y = 78
-    text_width = x1 - (x0 + 58) - 12
     leading = font_size * 1.42
-    for item, points, rows in groups:
+    for group in groups:
+        item, points, rows = group['item'], group['points'], group['rows']
+        y = group['panelTop']
         header = f"题目 {item.get('source', '')}  ·  本题 {sum(p.get('marks', 1) for p in points if p.get('awarded') is True)}/{sum(p.get('marks', 1) for p in points)}"
+        if group['questionTop'] is None:
+            header += '  ·  位置待核对'
         page.draw_rect(fitz.Rect(x0, y, x1, y + 30), color=(.72, .80, .88), fill=(.91, .95, .98), width=.8, overlay=True)
         page.insert_text((x0 + 11, y + 20), header, fontsize=max(10.4, font_size), fontname=font_name, color=navy, overlay=True)
         y += 38
-        for point, state, criterion, reason in rows:
+        for point, state, criterion_lines, reason_lines, row_height in rows:
             awarded = point.get('awarded')
             colour = green if awarded is True else red if awarded is False else amber
             fill = (.93, .98, .95) if awarded is True else (.995, .94, .945) if awarded is False else (.995, .98, .91)
-            criterion_lines = _wrap_panel_text('准则：' + criterion, text_width, panel_font, font_size)
             reason_size = max(9.0, font_size - .5)
             reason_leading = max(12.8, leading - .7)
-            reason_lines = (_wrap_panel_text('失分原因：' + reason, text_width, panel_font, reason_size)
-                            if awarded is False and reason else [])
-            row_height = 36 + len(criterion_lines) * leading
-            if reason_lines:
-                row_height += 7 + len(reason_lines) * reason_leading
-            row_height += 12
             row_top = y
             page.draw_rect(fitz.Rect(x0, row_top, x1, row_top + row_height), color=colour, fill=fill, width=1.1, overlay=True)
             mark_x, mark_y = x0 + 24, row_top + 24
@@ -1351,22 +1478,33 @@ def annotated_pdf(folder, draft, approved=False):
                 grouped.setdefault(page_number, []).append(point)
         for page_number, points in grouped.items():
             if 1 <= page_number <= len(source):
-                confirmed = [
-                    point for point in points
-                    if point.get('awarded') is not None and point.get('position')
-                ]
-                if confirmed:
-                    _draw_item_marks(source[page_number - 1], item, confirmed)
                 page_items.setdefault(page_number, []).append((item, points))
     name = 'Marked-Paper.pdf' if approved else 'Draft-Marked-Paper.pdf'
     destination = Path(folder) / name
     temporary = destination.with_suffix('.tmp.pdf')
     output = fitz.open()
     panel_width = 390
+    gutter_width = 78
+    draft['annotationLayout'] = []
     for index, original_page in enumerate(source):
-        page = output.new_page(width=original_page.rect.width + panel_width, height=original_page.rect.height)
+        groups, height = _rubric_layout(original_page, page_items.get(index + 1, []), panel_width)
+        page = output.new_page(width=original_page.rect.width + gutter_width + panel_width, height=height)
         page.show_pdf_page(fitz.Rect(0, 0, original_page.rect.width, original_page.rect.height), source, index)
-        _draw_rubric_panel(page, page_items.get(index + 1, []), draft, original_page.rect.width, panel_width)
+        for group in groups:
+            top = group['questionTop']
+            confirmed = [point for point in group['points'] if point.get('awarded') is not None and point.get('position')]
+            mark_y = top + 15 if top is not None else None
+            if mark_y is not None and confirmed:
+                _draw_item_marks(page, group['item'], group['points'], original_page.rect.width, mark_y)
+                if group['panelTop'] > top + 2:
+                    page.draw_line((original_page.rect.width + 67, mark_y),
+                                   (original_page.rect.width + gutter_width + 16, group['panelTop'] + 15),
+                                   color=(.55, .63, .72), width=.7, overlay=True)
+            draft['annotationLayout'].append({key: group[key] for key in ('questionTop', 'panelTop', 'panelBottom')} | {
+                'source': group['item'].get('source'), 'page': index + 1,
+                'markX': original_page.rect.width + 17 if mark_y is not None and confirmed else None,
+                'markY': mark_y if confirmed else None})
+        _draw_rubric_panel(page, groups, draft, original_page.rect.width + gutter_width, panel_width)
     output.set_metadata({**source.metadata, 'title': draft.get('assignmentTitle', '') + ' - 原卷与评分准则同页批改版',
                          'subject': 'Original student paper with page-aligned marking criteria; teacher review required'})
     output.save(temporary, garbage=4, deflate=True)
@@ -1452,11 +1590,17 @@ def grade_job(folder, model):
                         'Read every handwritten scientific-notation exponent from the HIGH-RES answer crop and preserve its sign exactly. '
                         'Cross-check the exponent in the intermediate line against the final line; a tiny minus sign changes the result and must never be omitted. '
                         'Accept physically equivalent methods and wording only when they meet the supplied point. '
+                        'For symmetric force-time graphs, calculating one half of the area and multiplying the entire bracket by 2 is a complete valid method. '
+                        'Read outer multipliers and time-axis scale factors before judging missing segments; the reference decomposition is an example, not a mandatory method. '
+                        'Quote the FULL working expression including bracketed sums, outside x2 and 10^-3 factors in the working-point evidence. '
+                        'Transcribe the final answer exactly as written, including its original precision; never replace it with your own rounded correction in evidence. '
+                        'Reject a numeric final answer stated to 1 or more than 3 significant figures; retain independently correct formula and working marks. '
+                        'Do not apply approximate significant-figure rules to symbolic expressions, exact cancellation to zero, or explicitly required integer counts. '
                         'Use null for unreadable or ambiguous answers; use false for a confidently blank or incorrect response. '
                         'If a final answer is visible but formula or working are visibly absent, return false for those method points, NOT null. '
                         'Missing method is a definite lost mark, not uncertainty. Reserve null for genuinely unreadable/ambiguous writing or missing pages. '
                         'Quote faithful student evidence. For every lost mark, give ONE short Chinese sentence that states only the immediate problem and correction. '
-                        'Keep each reason within 30 Chinese characters where possible: for example “有效数字应保留2位。” or “未将毫秒换算为秒。” '
+                        'Keep each reason within 30 Chinese characters where possible: for example “有效数字应保留2位或3位。” or “未将毫秒换算为秒。” '
                         'Do not repeat the calculation, student evidence, rubric, score, or general praise. Return comment as an empty string unless a separate teacher-review issue cannot fit in the point reason. '
                         'For evidence boxes use normalized 0–1 coordinates on the named STUDENT PAGE only; omit box when uncertain. '
                         'Never infer missing question conditions, award unscorable parts, or mistake printed model answers for student writing.'},
